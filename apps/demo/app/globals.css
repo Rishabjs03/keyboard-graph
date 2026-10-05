@@ -1,0 +1,182 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ink: #0a0a0a;
+  --color-muted: #6b6b70;
+  --color-faint: #a1a1a6;
+  --color-line: #ececee;
+  --color-surface: #fafafa;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: light;
+  --kg-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  background: #ffffff;
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-feature-settings: 'ss01', 'cv11';
+}
+
+::selection {
+  background: #0a0a0a;
+  color: #ffffff;
+}
+
+/* Focus rings that feel native to the design. */
+:focus-visible {
+  outline: 2px solid #0a0a0a;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Range input: thin track, keycap-like thumb. */
+.range {
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #0a0a0a var(--fill), #e7e7ea var(--fill));
+}
+.range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #0a0a0a var(--fill), #e7e7ea var(--fill));
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 6px;
+  background: linear-gradient(#ffffff, #f1f1f3);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 0 rgb(0 0 0 / 0.12),
+    0 4px 10px -2px rgb(0 0 0 / 0.18);
+  transition: transform 0.15s var(--ease-out-soft);
+}
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 6px;
+  background: linear-gradient(#ffffff, #f1f1f3);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 0 rgb(0 0 0 / 0.12);
+}
+.range:active::-webkit-slider-thumb {
+  transform: translateY(1px) scale(0.96);
+}
+
+/* sugar-high token colours */
+.code {
+  --sh-class: #7c3aed;
+  --sh-identifier: #0a0a0a;
+  --sh-sign: #8e8e93;
+  --sh-property: #0369a1;
+  --sh-entity: #0f766e;
+  --sh-jsxliterals: #0a0a0a;
+  --sh-string: #15803d;
+  --sh-keyword: #be185d;
+  --sh-comment: #a1a1a6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Mini keycaps (theme swatches, colour pickers, logo) ─────────────────── */
+.mk {
+  --c: #ebedf0;
+  --skirt: color-mix(in oklab, var(--c), #1b1f24 30%);
+  --travel: 4px;
+  position: relative;
+  display: block;
+  border-radius: 11px;
+}
+.mk-shadow {
+  position: absolute;
+  inset: 22% 6% -6% 6%;
+  border-radius: inherit;
+  box-shadow: 0 8px 14px -6px rgb(15 23 42 / 0.32);
+  transition:
+    opacity 0.2s var(--ease-out-soft),
+    transform 0.2s var(--ease-out-soft);
+}
+.mk-skirt {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--skirt);
+  background-image: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0.1),
+    transparent 22%,
+    transparent 78%,
+    rgb(0 0 0 / 0.1)
+  );
+  transition: background-color 0.45s ease;
+}
+.mk-cap {
+  position: absolute;
+  inset: 0 0 var(--travel) 0;
+  border-radius: inherit;
+  background: var(--face, var(--c));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 0 0 0.5px rgb(0 0 0 / 0.07);
+  transition: background 0.45s ease;
+}
+.mk-cap::before {
+  content: '';
+  position: absolute;
+  inset: 12% 13% 15% 13%;
+  border-radius: 8px;
+  background-image:
+    radial-gradient(130% 100% at 50% 115%, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0) 64%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.08), rgb(0 0 0 / 0) 60%);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
+}
+.mk-cap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.32),
+    rgb(255 255 255 / 0) 40%,
+    rgb(0 0 0 / 0.05)
+  );
+}
+.mk-legend {
+  position: absolute;
+  inset: 0 0 var(--travel) 0;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+}
