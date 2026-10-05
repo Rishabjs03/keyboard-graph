@@ -106,17 +106,17 @@ export { createGhostTyper, type GhostTypingOptions, type GhostTyper } from './co
 export {
   SwitchAudio,
   isSwitchProfile,
+  parseSoundAttribute,
   type SoundOption,
   type SoundPack,
   type SwitchAudioOptions,
 } from './audio/engine.js';
 export {
-  renderStroke,
-  renderVariants,
   switchProfiles,
-  switchRecipes,
+  sprites,
   type StrokePhase,
+  type StrokeSlice,
   type SwitchProfile,
-} from './audio/synth.js';
+} from './audio/profiles.js';
 
 export type { ClackyHandle } from './core/handle.js';

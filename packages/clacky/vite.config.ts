@@ -9,7 +9,9 @@ import { defineConfig } from 'vite';
 export default defineConfig({
   build: {
     target: 'es2022',
-    sourcemap: true,
+    // Output is unminified and readable, so no source maps (they would also duplicate
+    // the embedded sound sprites).
+    sourcemap: false,
     minify: false,
     emptyOutDir: true,
     lib: {

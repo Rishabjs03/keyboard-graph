@@ -1,7 +1,7 @@
 {
   "name": "clacky",
   "version": "0.1.0",
-  "description": "Your GitHub contribution graph as a grid of clickable mechanical keycaps, with tactile press animations and synthesised switch sounds. React component + Web Component.",
+  "description": "Your GitHub contribution graph as a grid of clickable mechanical keycaps, with tactile press animations and real switch sounds. React component + Web Component.",
   "license": "MIT",
   "author": "Rishab Agarwal (https://x.com/Yrishavjs)",
   "homepage": "https://github.com/Rishabjs03/keyboard-graph#readme",
@@ -12,6 +12,7 @@
   },
   "bugs": "https://github.com/Rishabjs03/keyboard-graph/issues",
   "keywords": [
+    "clacky",
     "github",
     "contributions",
     "contribution-graph",
@@ -82,6 +83,7 @@
   },
   "files": [
     "dist",
+    "sounds",
     "README.md",
     "LICENSE"
   ],
@@ -94,7 +96,8 @@
     "size": "node scripts/size.mjs",
     "prepublishOnly": "pnpm build",
     "prepack": "node scripts/copy-readme.mjs",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "sounds": "node scripts/encode-sounds.mjs"
   },
   "peerDependencies": {
     "motion": ">=11.0.0",

@@ -1,28 +1,37 @@
 import { describe, expect, it } from 'vitest';
 import { parseSoundAttribute } from '../src/audio/engine';
-import { renderStroke, renderVariants, switchProfiles, switchRecipes } from '../src/audio/synth';
+import { isSwitchProfile, sprites, switchProfiles } from '../src/audio/profiles';
 import { sampleSpring, springs } from '../src/core/spring';
 
-describe('switch synthesis', () => {
-  it.each(switchProfiles)('renders clean %s strokes', (profile) => {
-    for (const phase of ['down', 'up'] as const) {
-      const samples = renderStroke(switchRecipes[profile][phase], 44_100);
-      let peak = 0;
-      for (const s of samples) {
-        expect(Number.isFinite(s)).toBe(true);
-        peak = Math.max(peak, Math.abs(s));
-      }
-      expect(peak).toBeGreaterThan(0.3);
-      expect(peak).toBeLessThanOrEqual(1);
-      expect(samples.length / 44_100).toBeLessThan(0.31);
-      // Ends in silence (no click at the end of the buffer).
-      expect(Math.abs(samples[samples.length - 1]!)).toBeLessThan(0.01);
+const modules = {
+  blue: () => import('../src/audio/sounds/blue'),
+  brown: () => import('../src/audio/sounds/brown'),
+  red: () => import('../src/audio/sounds/red'),
+  cream: () => import('../src/audio/sounds/cream'),
+};
+
+describe('switch recordings', () => {
+  it.each(switchProfiles)('%s has enough clean, ordered strokes', (profile) => {
+    const { down, up } = sprites[profile];
+    expect(down.length).toBeGreaterThanOrEqual(3);
+    expect(up.length).toBeGreaterThanOrEqual(2);
+    let cursor = 0;
+    for (const [start, duration] of [...down, ...up]) {
+      expect(start).toBeGreaterThanOrEqual(cursor);
+      expect(duration).toBeGreaterThan(20);
+      expect(duration).toBeLessThan(300);
+      cursor = start + duration;
     }
   });
 
-  it('produces distinct variants', () => {
-    const [a, b] = renderVariants('blue', 'down', 44_100, 2);
-    expect(a!.length === b!.length && a!.every((v, i) => v === b![i])).toBe(false);
+  it.each(switchProfiles)('%s ships a small, valid MP3 sprite', async (profile) => {
+    const { default: base64 } = await modules[profile]();
+    const bytes = Buffer.from(base64, 'base64');
+    expect(bytes.length).toBeLessThan(40 * 1024);
+    // ID3 tag or an MPEG frame sync at the start.
+    const id3 = bytes.subarray(0, 3).toString('latin1') === 'ID3';
+    const sync = bytes[0] === 0xff && (bytes[1]! & 0xe0) === 0xe0;
+    expect(id3 || sync).toBe(true);
   });
 
   it('parses the sound attribute', () => {
@@ -30,6 +39,8 @@ describe('switch synthesis', () => {
     expect(parseSoundAttribute('off')).toBe(false);
     expect(parseSoundAttribute('false')).toBe(false);
     expect(parseSoundAttribute('weird')).toBe('brown');
+    expect(isSwitchProfile('blue')).toBe(true);
+    expect(isSwitchProfile('constructor')).toBe(false);
   });
 });
 

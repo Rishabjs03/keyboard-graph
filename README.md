@@ -40,7 +40,7 @@ Every day is a key. Press one: it travels down, springs back, clicks like a real
 | ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 🎹 **Real keycaps, pure CSS** | Concave dish, side skirt, specular highlight, soft drop shadow. No images, no canvas, no WebGL.                                                  |
 | 🪀 **Tactile press**          | The key bottoms out in 55 ms, then a physically simulated spring returns it with a hint of overshoot. Neighbours dip and glow in sympathy.       |
-| 🔊 **Switch sounds**          | Blue (clicky), Brown (tactile), Red (linear) and Cream (deep thock), **synthesised in the browser**: no samples, no licensing questions.         |
+| 🔊 **Switch sounds**          | Blue (clicky), Brown (tactile), Red (linear) and Cream (deep thock): **real keyboard recordings** (CC0), separate press and release clips.       |
 | 🎨 **8 themes + your own**    | Presets with light and dark palettes, a `theme` object, or plain CSS custom properties. Theme changes ripple across the keys as a wave.          |
 | ♿ **Accessible**             | Arrow-key navigation, Enter/Space presses, screen-reader labels, a visible focus ring, and `prefers-reduced-motion` support.                     |
 | ⚡ **Fast**                   | About 370 keys, **7 delegated listeners**, and presses that animate only `transform`/`opacity` on the compositor. Presses never re-render React. |
@@ -87,7 +87,7 @@ bun add clacky motion
 | `clacky`         | Framework-agnostic core: data, layout, themes, styles, audio, interactions      | tree-shakeable            |
 | `clacky/server`  | `fetchGitHubContributions()`, `createContributionsHandler()` for your own proxy | ~1.6 kB                   |
 
-Sizes include the stylesheet and the sound synthesiser.
+Sizes include the stylesheet. Each switch's sounds are a separate ~14 to 22 kB (gzip) chunk, loaded only when used.
 
 ---
 
@@ -173,7 +173,7 @@ flowchart LR
     D["data.ts<br/>fetch · cache · normalise"] --> L["layout.ts<br/>53 × 7 week grid"]
     T["theme.ts<br/>presets → CSS variables"]
     S["styles.ts<br/>keycap CSS"]
-    A["audio/<br/>synth + voice pool"]
+    A["audio/<br/>recordings + voice pool"]
     I["interactions.ts<br/>delegated events · nav · ripple"]
   end
   L --> R["React wrapper<br/>JSX + Motion animator"]
@@ -190,7 +190,7 @@ flowchart LR
 4. **Size**: key size is solved in CSS with container query units (`100cqi / columns`). The graph shrinks to fit its container, then scrolls with snap on very small screens. There's no JS measuring.
 5. **Interact**: seven listeners on the grid (not one per key) drive presses, keyboard navigation and tooltips. Presses animate imperatively, so React never re-renders on a keypress.
 6. **Animate**: the web component plays spring curves baked into WAAPI keyframes (compositor-thread). The React wrapper uses [Motion](https://motion.dev), which hands springs to the browser as hardware-accelerated `linear()` curves.
-7. **Sound**: on the first user gesture an `AudioContext` is created. Switch sounds are synthesised once (filtered noise + damped resonances), cached, and played through a fixed pool of voices with random pitch and gain.
+7. **Sound**: the selected switch's recordings (a small MP3 sprite) load lazily and are decoded once. On the first user gesture an `AudioContext` is created, and strokes play through a fixed pool of voices with a random sample, pitch and gain.
 
 ---
 
@@ -354,22 +354,27 @@ Precedence: `--clacky-<token>` (CSS) › `theme` prop › preset defaults. The e
 
 ## 🔊 Sound
 
-| Profile | Character  | What you hear                                                                              |
-| ------- | ---------- | ------------------------------------------------------------------------------------------ |
-| `blue`  | Clicky     | A sharp click-leaf snap, then a bright bottom-out ~14 ms later; a second click on release. |
-| `brown` | Tactile    | A soft scratchy bump, then a mid-pitched bottom-out. _(default)_                           |
-| `red`   | Linear     | No bump: a rounded, thocky bottom-out and a light top-out.                                 |
-| `cream` | Deep thock | A low, damped body resonance with the highs rolled off.                                    |
+| Profile | Switch (recording)                    | What you hear                                                      |
+| ------- | ------------------------------------- | ------------------------------------------------------------------ |
+| `blue`  | Kailh Box Jade, clicky                | A crisp, bright click on the way down and a sharp tick on release. |
+| `brown` | Cherry MX Brown on a Kinesis, tactile | A muted bump and a clean bottom-out. _(default)_                   |
+| `red`   | Linear switches, clacky               | A smooth, plasticky clack with a light top-out.                    |
+| `cream` | A thocky custom board                 | The deepest, roundest "thock" of the four.                         |
 
-**How the sounds are made.** There are no audio files. Each stroke is synthesised from layered physical
-events: band-passed noise bursts (the click leaf and the plastic "clack") plus damped sine resonances
-whose pitch drops slightly as they ring (the "thock" of the housing). The synth runs once per profile,
-renders four slightly different variants of the keydown and keyup sounds, and caches them as `AudioBuffer`s shared by
-every graph on the page.
+**Real recordings.** Every sound is a real keystroke from a real mechanical keyboard, cut from
+recordings released under **CC0 (public domain)** on Freesound. The recordists and links are in
+[`sounds/SOURCES.md`](./packages/clacky/sounds/SOURCES.md). Each profile is 6 presses and 4 releases packed into one
+~20 kB MP3 sprite, picked by a script for sharp onsets, single clean hits and a consistent tone.
 
-**Playback.** A fixed pool of 12 voices plays strokes with **±70 cents of random detune** and **±9% gain**,
-so rapid typing never sounds robotic, never piles up, and never cuts off abruptly (a stolen voice
-fades out in 4 ms). Keydown and keyup are separate sounds.
+**Loading.** Each profile is its own lazily loaded chunk, so a page only downloads the switch it uses
+(after the first interaction, or ahead of time in the background). It is decoded once with an
+`OfflineAudioContext` and shared by every graph on the page. The CDN `<script>` build fetches the
+same sprite from jsDelivr instead of inlining all four.
+
+**Playback.** A fixed pool of 12 voices plays strokes with a random sample (never the same one twice
+in a row), **±35 cents of detune** and **±7% gain**, so rapid typing never sounds robotic, never piles
+up, and never cuts off abruptly (a stolen voice fades out in 4 ms). Presses and releases are separate
+recordings, played on pointer/key down and up.
 
 **Autoplay rules.** The `AudioContext` is created on the first real user gesture (pointer or key)
 inside the graph, never on page load.
@@ -472,7 +477,8 @@ Please read this before shipping to production.
 
 - **Default contributions API** (`github-contributions-api.jogruber.de`): a free, open-source, community-run service ([source](https://github.com/grubersjoe/github-contributions-api)) that scrapes the public contribution calendar. It needs no token, but it has **no SLA and no published rate limit**, and it caches responses for about an hour. It's ideal for portfolios and demos; for high traffic, use the [self-hosted proxy](#-self-hosted-proxy) (or at least your own CDN in front). It only sees what your public profile shows, so private contributions appear only if you enabled _"Include private contributions"_ on your profile.
 - **GitHub GraphQL API** (proxy mode): 5,000 points per hour per token, and each request costs ~1 point. GitHub also applies secondary rate limits to bursts. A `contributionsCollection` covers at most one year, which matches what the component asks for. With CDN caching (`s-maxage=3600`) this comfortably serves large sites.
-- **Sounds**: synthesised at runtime by code in this repository, with no third-party recordings, so they're covered by this project's MIT licence. If you pass your own `SoundPack`, make sure you have the rights to those files (CC0 sources such as [Kenney](https://kenney.nl/assets/category:Audio) or Freesound's CC0 filter work well).
+- **Sounds**: cut from four recordings released under **CC0 1.0** (public domain) on Freesound by el_boss, DarcyConroy, samchitto and aliyahb. CC0 allows copying, modifying and redistributing, commercially included, with no attribution required (credit is given anyway in [`sounds/SOURCES.md`](./packages/clacky/sounds/SOURCES.md)). If you pass your own `SoundPack`, make sure you have the rights to those files (Freesound's CC0 filter is a good source).
+- **CDN build and sounds**: the `<script>` (IIFE) build loads the selected switch's sprite from `cdn.jsdelivr.net`. If your site's Content Security Policy blocks that host, use the npm package (sounds are bundled) or add it to `connect-src`.
 - **Dependencies**: Motion (MIT) is an optional peer dependency for the React wrapper only. The demo uses Next.js (MIT), Tailwind CSS (MIT), sugar-high (MIT), and the Geist font (SIL Open Font License).
 
 ---
@@ -483,7 +489,8 @@ Please read this before shipping to production.
 .
 ├── packages/clacky   # the library (published to npm)
 │   ├── src/core              # data, layout, theme, styles, springs, interactions, tooltip
-│   ├── src/audio             # switch synthesiser + Web Audio voice pool
+│   ├── src/audio             # switch recordings loader + Web Audio voice pool
+│   ├── sounds                # CC0 recording sprites + SOURCES.md
 │   ├── src/react             # <Clacky> + Motion animator + useContributions
 │   ├── src/element           # <clacky-graph> custom element (WAAPI animator)
 │   ├── src/server            # GitHub GraphQL helper + Fetch-API proxy handler

@@ -18,5 +18,5 @@ export type { ClackyOptions, ThemeTransitionOptions } from '../core/options.js';
 export type { ContributionDay, KeyPressDetail, LoadDetail, YearSelection } from '../core/types.js';
 export type { ThemeInput, ThemeName, CustomTheme } from '../core/theme.js';
 export type { SoundOption, SoundPack } from '../audio/engine.js';
-export type { SwitchProfile } from '../audio/synth.js';
+export type { SwitchProfile } from '../audio/profiles.js';
 export { themes, themeNames } from '../core/theme.js';

@@ -30,7 +30,7 @@ export function Footer() {
         </a>
       </div>
       <p className="text-[12px] text-faint">
-        MIT licensed · Switch sounds are synthesised in your browser
+        MIT licensed · Switch sounds are real CC0 keyboard recordings
       </p>
     </footer>
   );

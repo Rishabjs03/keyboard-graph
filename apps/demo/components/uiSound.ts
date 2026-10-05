@@ -3,7 +3,7 @@
 import { SwitchAudio, type SoundOption } from 'clacky';
 
 /**
- * The demo's controls click with the same synthesised switch as the graph, so the
+ * The demo's controls click with the same switch recordings as the graph, so the
  * whole page feels like one keyboard. One shared instance, created lazily.
  */
 let audio: SwitchAudio | null = null;

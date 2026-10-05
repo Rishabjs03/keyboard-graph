@@ -1,5 +1,12 @@
 name: Release
 
+# Publishes `clacky` to npm when a GitHub release is published.
+#
+# Authentication uses npm trusted publishing (OIDC): no token is stored in the repo.
+# One-time setup on npmjs.com: package "clacky" → Settings → Trusted publishing →
+# GitHub Actions → repository Rishabjs03/keyboard-graph, workflow "release.yml".
+# (A classic NPM_TOKEN secret also works as a fallback.)
+
 on:
   release:
     types: [published]
@@ -7,7 +14,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm provenance
+  id-token: write # OIDC for trusted publishing + provenance
 
 jobs:
   publish:
@@ -24,9 +31,12 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
+      # Trusted publishing needs npm 11.5.1 or newer.
+      - run: npm install -g npm@latest
+
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm lint && pnpm build:lib && pnpm typecheck && pnpm test
+      - run: pnpm lint && pnpm build:lib && pnpm typecheck && pnpm test && pnpm --filter clacky smoke
 
       - name: Check the tag matches the package version
         if: github.event_name == 'release'
@@ -37,6 +47,7 @@ jobs:
           fi
 
       - name: Publish
-        run: pnpm --filter clacky publish --access public --no-git-checks
+        working-directory: packages/clacky
+        run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

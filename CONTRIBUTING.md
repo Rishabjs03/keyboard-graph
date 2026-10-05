@@ -17,7 +17,7 @@ Requirements: Node 20.9+ and pnpm 10.
 | Path                          | What lives there                                                  |
 | ----------------------------- | ----------------------------------------------------------------- |
 | `packages/clacky/src/core`    | Framework-agnostic logic: data, layout, themes, CSS, interactions |
-| `packages/clacky/src/audio`   | The switch synthesiser and Web Audio playback                     |
+| `packages/clacky/src/audio`   | Switch recording loader and Web Audio playback                    |
 | `packages/clacky/src/react`   | The React component (Motion animations)                           |
 | `packages/clacky/src/element` | The `<clacky-graph>` custom element (WAAPI animations)            |
 | `packages/clacky/src/server`  | The GitHub GraphQL proxy helper                                   |
@@ -50,10 +50,18 @@ CI runs the same commands. Please also:
 Add a preset to `themes` in `packages/clacky/src/core/theme.ts` with a light **and** a dark
 palette, then add its name to the `ThemeName` union. Level 0 should read as a neutral, blank cap.
 
-## Adding a switch profile
+## Adding or replacing a switch profile
 
-Add a recipe to `switchRecipes` in `src/audio/synth.ts`. A recipe is a list of noise and tone layers
-with onset times. Keep sounds under 300 ms, and run the audio tests to make sure they render cleanly.
+Sounds must come from recordings you have the rights to ship under MIT, which in practice means
+**CC0**. Slice a recording into a sprite, regenerate the modules, then credit it in
+`packages/clacky/sounds/SOURCES.md`:
+
+```bash
+python3 packages/clacky/scripts/slice-recordings.py <profile> packages/clacky/sounds path/to/recording.mp3
+pnpm --filter clacky sounds
+```
+
+A new profile name also needs adding to `SwitchProfile` and the loaders in `src/audio/`.
 
 ## Releasing (maintainers)
 
