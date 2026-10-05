@@ -606,7 +606,7 @@ export const KeyboardGraph = forwardRef<KeyboardGraphHandle, KeyboardGraphProps>
     }, [layoutRef, playEntrance]);
 
     // ── Render ─────────────────────────────────────────────────────────────────
-    const loadedYear = data ? null : contributions.year;
+    const loadedYear = contributions.year;
     const years = yearOptions(o.yearSelector);
     const columns = layout?.columns ?? SKELETON_COLUMNS;
     const rootStyle = { ...initial.themeVars, ...rootStyleVars(o), ...style } as CSSProperties;

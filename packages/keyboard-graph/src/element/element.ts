@@ -247,7 +247,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
   #tooltipOut: Animation | null = null;
 
   connectedCallback(): void {
-    if (!this.#shadow) this.#build();
+    if (!this.#shadow) {
+      this.#upgradeProperties();
+      this.#build();
+    }
     this.#connected = true;
     if (typeof window.matchMedia === 'function') {
       this.#motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -329,6 +332,21 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
 
   #onMotionChange = () => this.#schedule();
 
+  /**
+   * A property set before `customElements.define` ran (e.g. `el.data = …` from a
+   * framework or a lazily loaded script) is an own property that shadows the
+   * prototype accessor. Re-assign it through the accessor.
+   */
+  #upgradeProperties() {
+    const self = this as unknown as Record<string, unknown>;
+    for (const key of [...OPTION_KEYS, 'options']) {
+      if (!Object.prototype.hasOwnProperty.call(this, key)) continue;
+      const value = self[key];
+      delete self[key];
+      self[key] = value;
+    }
+  }
+
   #schedule() {
     if (this.#queued || !this.#connected) return;
     this.#queued = true;
@@ -338,10 +356,20 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     });
   }
 
+  #dataAttribute: { raw: string | null; parsed: unknown } = { raw: null, parsed: undefined };
+
   #readAttributes(): Partial<KeyboardGraphOptions> {
     const out: Record<string, unknown> = {};
     for (const [attr, [key, parse]] of Object.entries(ATTRIBUTES)) {
-      const value = parse(this.getAttribute(attr));
+      const raw = this.getAttribute(attr);
+      let value: unknown;
+      if (attr === 'data') {
+        // Re-parsing would create a new array (and a reload) on every update.
+        if (raw !== this.#dataAttribute.raw) this.#dataAttribute = { raw, parsed: parse(raw) };
+        value = this.#dataAttribute.parsed;
+      } else {
+        value = parse(raw);
+      }
       if (value !== undefined) out[key] = value;
     }
     return out as Partial<KeyboardGraphOptions>;
@@ -381,9 +409,8 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     if (!button?.dataset.year) return;
     const year = parseYear(button.dataset.year);
     this.#selectedYear = year;
-    if (this.hasAttribute('year') || this.#props.year !== undefined) {
-      this.#props = { ...this.#props, year };
-    }
+    if (this.#props.year !== undefined) this.#props = { ...this.#props, year };
+    else if (this.hasAttribute('year')) this.setAttribute('year', String(year));
     this.dispatchEvent(
       new CustomEvent('kg-yearchange', { detail: { year }, bubbles: true, composed: true }),
     );
@@ -470,13 +497,13 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     this.#abort?.abort();
     const controller = new AbortController();
     this.#abort = controller;
+    this.#root.removeAttribute('data-busy');
 
     if (o.data) {
       try {
-        const days = normalizeContributions(o.data, {
-          year: typeof o.year === 'number' ? o.year : null,
-        });
-        this.#setData(days, sumContributions(days), o, null);
+        const calendarYear = typeof year === 'number' ? year : null;
+        const days = normalizeContributions(o.data, { year: calendarYear });
+        this.#setData(days, sumContributions(days), o, calendarYear);
       } catch (error) {
         this.#setError(error, o);
       }
@@ -557,7 +584,7 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
 
   #render(o: ResolvedOptions) {
     this.#root.setAttribute('data-state', this.#state);
-    const year = o.data ? null : this.#loadedYear;
+    const year = this.#loadedYear;
     const days = this.#state === 'ready' ? this.#days : null;
     const previous = this.#layout;
     const layout = days
@@ -707,19 +734,35 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     return '';
   }
 
+  #yearsKey = '';
+
+  /** Updated in place (never re-created) so a focused year button keeps focus. */
   #renderHeader(o: ResolvedOptions, layout: GraphLayout | null, year: YearSelection | null) {
     const years = yearOptions(o.yearSelector);
-    const showTotal = o.showTotal && layout;
-    if (!showTotal && years.length === 0) {
-      this.#header.hidden = true;
-      return;
+    const showTotal = Boolean(o.showTotal && layout);
+    this.#header.hidden = !showTotal && years.length === 0;
+    if (this.#header.hidden) return;
+
+    let total = this.#header.querySelector<HTMLParagraphElement>('.kg-total');
+    if (!total) {
+      total = document.createElement('p');
+      total.className = 'kg-total';
+      total.setAttribute('part', 'total');
+      this.#header.prepend(total);
     }
-    this.#header.hidden = false;
-    const total = showTotal
-      ? `<p class="kg-total" part="total">${escapeHTML(totalLabel(layout.total, year, o))}</p>`
-      : '<span></span>';
-    this.#header.innerHTML =
-      total + (years.length > 0 ? yearSelectorHTML(years, this.#effectiveYear(o)) : '');
+    total.textContent = showTotal && layout ? totalLabel(layout.total, year, o) : '';
+
+    const selected = this.#effectiveYear(o);
+    const key = years.join(',');
+    if (key !== this.#yearsKey) {
+      this.#yearsKey = key;
+      this.#header.querySelector('.kg-years')?.remove();
+      if (years.length > 0)
+        this.#header.insertAdjacentHTML('beforeend', yearSelectorHTML(years, selected));
+    }
+    for (const button of this.#header.querySelectorAll<HTMLElement>('.kg-year')) {
+      button.setAttribute('aria-pressed', String(button.dataset.year === String(selected)));
+    }
   }
 
   #renderFooter(o: ResolvedOptions) {

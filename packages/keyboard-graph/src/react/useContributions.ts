@@ -46,16 +46,21 @@ interface RemoteState {
   busy: boolean;
 }
 
-/** Cheap content signature so an inline `data={[...]}` literal doesn't re-layout every render. */
+/**
+ * Order-sensitive content hash (FNV-1a) so an inline `data={[...]}` literal doesn't
+ * re-layout every render, while any change to a date, count or level is detected.
+ */
 function signature(data: readonly ContributionInput[] | undefined): string {
   if (!data) return '';
-  let sum = 0;
-  let levels = 0;
-  for (const d of data) {
-    sum += Number(d.count) || 0;
-    levels += (Number(d.level) || 0) * 31 + (Number(d.count) || 0) * 7;
-  }
-  return `${data.length}|${data[0]?.date}|${data[data.length - 1]?.date}|${sum}|${levels}`;
+  let hash = 0x811c9dc5;
+  const mix = (value: string) => {
+    for (let i = 0; i < value.length; i++) {
+      hash ^= value.charCodeAt(i);
+      hash = Math.imul(hash, 0x01000193);
+    }
+  };
+  for (const d of data) mix(`${d.date}|${d.count}|${d.level ?? ''};`);
+  return `${data.length}:${(hash >>> 0).toString(36)}`;
 }
 
 const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;

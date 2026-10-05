@@ -174,42 +174,52 @@ const responseCache = new Map<string, Promise<ContributionInput[]>>();
 const REQUEST_TIMEOUT_MS = 15_000;
 
 async function fetchFromEndpoint(url: string): Promise<ContributionInput[]> {
-  let response: Response;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    response = await fetch(url, {
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    });
-  } catch (error) {
-    throw new KeyboardGraphError(
-      'network',
-      controller.signal.aborted
-        ? 'The contributions API took too long to respond.'
-        : `Network error while loading contributions: ${String(error)}`,
-    );
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+      });
+    } catch (error) {
+      throw timeoutOr(controller, `Network error while loading contributions: ${String(error)}`);
+    }
+    if (response.status === 404) {
+      throw new KeyboardGraphError('not-found', 'GitHub user not found.', 404);
+    }
+    if (response.status === 403 || response.status === 429) {
+      throw new KeyboardGraphError(
+        'rate-limited',
+        'The contributions API is rate limiting requests. Try again shortly.',
+        response.status,
+      );
+    }
+    if (!response.ok) {
+      throw new KeyboardGraphError(
+        'network',
+        `Contributions API responded with ${response.status}.`,
+        response.status,
+      );
+    }
+    let payload: unknown;
+    try {
+      payload = await response.json();
+    } catch (error) {
+      throw timeoutOr(controller, `Invalid response from the contributions API: ${String(error)}`);
+    }
+    return parseContributionsPayload(payload);
   } finally {
     clearTimeout(timer);
   }
-  if (response.status === 404) {
-    throw new KeyboardGraphError('not-found', 'GitHub user not found.', 404);
-  }
-  if (response.status === 403 || response.status === 429) {
-    throw new KeyboardGraphError(
-      'rate-limited',
-      'The contributions API is rate limiting requests. Try again shortly.',
-      response.status,
-    );
-  }
-  if (!response.ok) {
-    throw new KeyboardGraphError(
-      'network',
-      `Contributions API responded with ${response.status}.`,
-      response.status,
-    );
-  }
-  return parseContributionsPayload(await response.json());
+}
+
+function timeoutOr(controller: AbortController, message: string) {
+  return new KeyboardGraphError(
+    'network',
+    controller.signal.aborted ? 'The contributions API took too long to respond.' : message,
+  );
 }
 
 function abortable<T>(promise: Promise<T>, signal: AbortSignal | undefined): Promise<T> {

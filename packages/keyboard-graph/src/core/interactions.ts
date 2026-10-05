@@ -76,6 +76,8 @@ export function createInteractions(options: InteractionOptions): InteractionCont
   const parts = new WeakMap<HTMLElement, KeyParts>();
   let active = -1;
   const pointers = new Map<number, number>();
+  /** Active holds per key (pointer, keyboard and programmatic presses can overlap). */
+  const holds = new Map<number, number>();
   let keyboardHeld = -1;
   let lastKeyboardActivation = 0;
   let hideTimer: ReturnType<typeof setTimeout> | undefined;
@@ -175,9 +177,13 @@ export function createInteractions(options: InteractionOptions): InteractionCont
     const cell = layout.cells[index];
     const p = partsOf(index);
     if (!cell || cell.future || !p) return false;
-    animator.press(p, o.depth);
+    const held = holds.get(index) ?? 0;
+    holds.set(index, held + 1);
+    if (held === 0) {
+      animator.press(p, o.depth);
+      if (settings.ripple) ripple(cell, p.key, o.depth);
+    }
     if (o.sound) audio?.play('down', o.velocity);
-    if (settings.ripple) ripple(cell, p.key, o.depth);
     if (o.tooltip) showTooltip(index);
     if (o.notify) {
       options.onPress?.({
@@ -195,6 +201,13 @@ export function createInteractions(options: InteractionOptions): InteractionCont
   const up = (index: number, depth: number, sound: boolean, velocity = 1) => {
     const p = partsOf(index);
     if (!p) return;
+    const remaining = (holds.get(index) ?? 1) - 1;
+    if (remaining > 0) {
+      // Still held by another input: keep the key down.
+      holds.set(index, remaining);
+      return;
+    }
+    holds.delete(index);
     animator.release(p, depth);
     if (sound) audio?.play('up', velocity);
   };
@@ -352,6 +365,7 @@ export function createInteractions(options: InteractionOptions): InteractionCont
   const controller: InteractionController = {
     setLayout(next) {
       layout = next;
+      holds.clear();
       indexKeys();
       syncRovingTabIndex();
     },
@@ -371,7 +385,8 @@ export function createInteractions(options: InteractionOptions): InteractionCont
       const depth = soft ? SOFT_DEPTH : 1;
       const velocity = soft ? 0.35 : 1;
       const sound = o.sound ?? true;
-      // Inside a user gesture (e.g. a global keydown) this enables audio; elsewhere it is a no-op.
+      // Inside a user gesture (e.g. a global keydown) this enables audio. Outside one,
+      // unlock() refuses to create an AudioContext, so nothing gets queued.
       if (sound) audio?.unlock();
       const pressed = down(index, {
         source: 'program',
@@ -415,6 +430,7 @@ export function createInteractions(options: InteractionOptions): InteractionCont
       programTimers.clear();
       clearHide();
       pointers.clear();
+      holds.clear();
     },
   };
 

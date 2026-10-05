@@ -88,8 +88,12 @@ export function createWaapiAnimator({ reducedMotion }: AnimatorOptions): KeyAnim
           list.filter((a) => a !== animation),
         );
     };
-    animation.addEventListener('finish', cleanup);
+    // A forwards-filling animation (a held press) keeps applying its end state after it
+    // finishes, so it stays tracked until it is cancelled (on release) or replaced.
+    const filling = options.fill === 'forwards' || options.fill === 'both';
+    if (!filling) animation.addEventListener('finish', cleanup);
     animation.addEventListener('cancel', cleanup);
+    animation.addEventListener('remove', cleanup);
     return animation;
   };
 

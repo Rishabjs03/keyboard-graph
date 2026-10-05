@@ -61,3 +61,53 @@ describe('<keyboard-graph>', () => {
     el.remove();
   });
 });
+
+describe('<keyboard-graph> regressions', () => {
+  it('keeps properties assigned before the element was defined', async () => {
+    const { defineKeyboardGraph } = await import('../src/element/element');
+    const el = document.createElement('keyboard-graph-late') as KeyboardGraphElement;
+    el.setAttribute('entrance', 'false');
+    el.data = sampleContributions('2026-10-05');
+    document.body.appendChild(el);
+    defineKeyboardGraph('keyboard-graph-late');
+    await tick();
+    expect(el.shadowRoot!.querySelectorAll('.kg-key[data-i]').length).toBe(371);
+    // The accessor still works after the upgrade.
+    el.data = sampleContributions('2026-10-05', 3, 10);
+    await tick();
+    expect(el.shadowRoot!.querySelectorAll('.kg-key[data-i]').length).toBe(10);
+    el.remove();
+  });
+
+  it('a year button click updates the year attribute when it controls the year', async () => {
+    const el = document.createElement('keyboard-graph') as KeyboardGraphElement;
+    el.setAttribute('entrance', 'false');
+    el.setAttribute('year-selector', '');
+    el.setAttribute('year', '2026');
+    el.data = sampleContributions('2026-10-05', 5, 800);
+    document.body.appendChild(el);
+    await tick();
+    const button = el.shadowRoot!.querySelector<HTMLButtonElement>('.kg-year[data-year="2025"]')!;
+    button.click();
+    await tick();
+    expect(el.getAttribute('year')).toBe('2025');
+    expect(el.shadowRoot!.querySelector('.kg-total')!.textContent).toContain('2025');
+    // The same button element survives the re-render (keyboard focus is kept).
+    expect(el.shadowRoot!.querySelector('.kg-year[data-year="2025"]')).toBe(button);
+    expect(button.getAttribute('aria-pressed')).toBe('true');
+    el.setAttribute('year', '2024');
+    await tick();
+    expect(el.shadowRoot!.querySelector('.kg-total')!.textContent).toContain('2024');
+    el.remove();
+  });
+
+  it('ignores theme names that only exist on Object.prototype', async () => {
+    const el = document.createElement('keyboard-graph') as KeyboardGraphElement;
+    el.setAttribute('theme', 'constructor');
+    el.data = sampleContributions('2026-10-05');
+    document.body.appendChild(el);
+    await tick();
+    expect(el.shadowRoot!.querySelector('.kg-root')!.getAttribute('data-state')).toBe('ready');
+    el.remove();
+  });
+});

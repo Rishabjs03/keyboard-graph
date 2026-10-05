@@ -119,6 +119,12 @@ function decodeSample(url: string): Promise<AudioBuffer | null> {
   return pending;
 }
 
+/** True inside (or shortly after) a user gesture. Assumes yes where the API is missing. */
+function hasUserActivation(): boolean {
+  const activation = (globalThis.navigator as Navigator | undefined)?.userActivation;
+  return activation ? activation.isActive : true;
+}
+
 export function isSwitchProfile(value: unknown): value is SwitchProfile {
   return typeof value === 'string' && (switchProfiles as string[]).includes(value);
 }
@@ -183,6 +189,8 @@ export class SwitchAudio {
   unlock(): void {
     if (this.options.sound === false || this.options.muted) return;
     if (!this.context) {
+      // Creating a context outside a gesture leaves it suspended and makes browsers warn.
+      if (!hasUserActivation()) return;
       const context = getContext();
       if (!context) return;
       this.context = context;
@@ -207,6 +215,17 @@ export class SwitchAudio {
   play(phase: StrokePhase, velocity = 1): void {
     const { context, master, buffers } = this;
     if (!this.enabled || !context || !master || !buffers) return;
+    if (context.state !== 'running') {
+      // Resuming is async. Within a gesture, play once it has resumed; otherwise drop the
+      // stroke rather than queueing it to burst out on the next interaction.
+      if (context.state === 'suspended' && hasUserActivation()) {
+        void context.resume().then(
+          () => this.play(phase, velocity),
+          () => undefined,
+        );
+      }
+      return;
+    }
 
     let list = buffers[phase];
     let rate = 1;

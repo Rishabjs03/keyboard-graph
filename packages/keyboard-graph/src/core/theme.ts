@@ -197,7 +197,7 @@ export const themes: Record<ThemeName, ThemePreset> = {
 export const themeNames = Object.keys(themes) as ThemeName[];
 
 export function isThemeName(value: unknown): value is ThemeName {
-  return typeof value === 'string' && value in themes;
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(themes, value);
 }
 
 function mergePalette(base: ThemePalette, patch: PartialPalette | undefined): ThemePalette {
@@ -216,8 +216,8 @@ function mergePalette(base: ThemePalette, patch: PartialPalette | undefined): Th
 /** Resolve a preset name or custom theme object into concrete light + dark palettes. */
 export function resolveTheme(input: ThemeInput | undefined | null): ResolvedTheme {
   if (!input) return themes.github;
-  if (typeof input === 'string') return themes[input] ?? themes.github;
-  const base = themes[input.extends ?? 'github'] ?? themes.github;
+  if (typeof input === 'string') return isThemeName(input) ? themes[input] : themes.github;
+  const base = isThemeName(input.extends) ? themes[input.extends] : themes.github;
   const { dark, extends: _extends, ...shared } = input;
   void _extends;
   const light = mergePalette(base.light, shared);
