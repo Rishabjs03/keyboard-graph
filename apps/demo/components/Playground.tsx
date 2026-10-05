@@ -331,7 +331,7 @@ export function Playground() {
       </section>
 
       <div className="mt-28 w-full">
-        <Reveal>
+        <Reveal margin="0px">
           <Footer />
         </Reveal>
       </div>
