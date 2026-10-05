@@ -198,43 +198,50 @@ export function Segmented<T extends string>({
   label: string;
 }) {
   const id = useId();
+  // Four or more options become a 2x2 grid when the row is too narrow for one line.
+  // The 20px radius is the pill's radius plus the 4px padding, so the active pill
+  // always sits concentrically inside the track, on one row or two.
+  const layout =
+    options.length > 3 ? 'grid grid-cols-2 @min-[22rem]:inline-flex' : 'inline-flex flex-wrap';
   return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="inline-flex flex-wrap rounded-full bg-sand p-1 shadow-[inset_0_1px_2px_rgba(60,42,18,0.06)]"
-    >
-      {options.map((option) => {
-        const active = option.value === value;
-        return (
-          <motion.button
-            key={option.value}
-            type="button"
-            role="radio"
-            aria-checked={active}
-            onClick={(e: MouseEvent<HTMLButtonElement>) => {
-              uiClick();
-              onChange(option.value, centerOf(e.currentTarget));
-            }}
-            whileTap={{ scale: 0.96 }}
-            className={`relative flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
-              active ? 'text-ink' : 'text-muted hover:text-ink'
-            }`}
-          >
-            {active && (
-              <motion.span
-                layoutId={`${id}-pill`}
-                className="absolute inset-0 rounded-full bg-paper shadow-[0_1px_2px_rgba(60,42,18,0.1),0_0_0_0.5px_rgba(60,42,18,0.06)]"
-                transition={{ type: 'spring', stiffness: 500, damping: 36 }}
-              />
-            )}
-            <span className="relative flex items-center gap-1.5">
-              {option.icon}
-              {option.label}
-            </span>
-          </motion.button>
-        );
-      })}
+    <div className="@container">
+      <div
+        role="radiogroup"
+        aria-label={label}
+        className={`${layout} rounded-[20px] bg-sand p-1 shadow-[inset_0_1px_2px_rgba(60,42,18,0.06)]`}
+      >
+        {options.map((option) => {
+          const active = option.value === value;
+          return (
+            <motion.button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={active}
+              onClick={(e: MouseEvent<HTMLButtonElement>) => {
+                uiClick();
+                onChange(option.value, centerOf(e.currentTarget));
+              }}
+              whileTap={{ scale: 0.96 }}
+              className={`relative flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
+                active ? 'text-ink' : 'text-muted hover:text-ink'
+              }`}
+            >
+              {active && (
+                <motion.span
+                  layoutId={`${id}-pill`}
+                  className="absolute inset-0 rounded-full bg-paper shadow-[0_1px_2px_rgba(60,42,18,0.1),0_0_0_0.5px_rgba(60,42,18,0.06)]"
+                  transition={{ type: 'spring', stiffness: 500, damping: 36 }}
+                />
+              )}
+              <span className="relative flex items-center gap-1.5">
+                {option.icon}
+                {option.label}
+              </span>
+            </motion.button>
+          );
+        })}
+      </div>
     </div>
   );
 }
