@@ -369,7 +369,8 @@ recordings released under **CC0 (public domain)** on Freesound. The recordists a
 **Loading.** Each profile is its own lazily loaded chunk, so a page only downloads the switch it uses
 (after the first interaction, or ahead of time in the background). It is decoded once with an
 `OfflineAudioContext` and shared by every graph on the page. The CDN `<script>` build fetches the
-same sprite from jsDelivr instead of inlining all four.
+same sprite from jsDelivr instead of inlining all four, and falls back to unpkg if jsDelivr errors or
+stalls for 6 seconds.
 
 **Playback.** A fixed pool of 12 voices plays strokes with a random sample (never the same one twice
 in a row), **±35 cents of detune** and **±7% gain**, so rapid typing never sounds robotic, never piles
@@ -478,7 +479,7 @@ Please read this before shipping to production.
 - **Default contributions API** (`github-contributions-api.jogruber.de`): a free, open-source, community-run service ([source](https://github.com/grubersjoe/github-contributions-api)) that scrapes the public contribution calendar. It needs no token, but it has **no SLA and no published rate limit**, and it caches responses for about an hour. It's ideal for portfolios and demos; for high traffic, use the [self-hosted proxy](#-self-hosted-proxy) (or at least your own CDN in front). It only sees what your public profile shows, so private contributions appear only if you enabled _"Include private contributions"_ on your profile.
 - **GitHub GraphQL API** (proxy mode): 5,000 points per hour per token, and each request costs ~1 point. GitHub also applies secondary rate limits to bursts. A `contributionsCollection` covers at most one year, which matches what the component asks for. With CDN caching (`s-maxage=3600`) this comfortably serves large sites.
 - **Sounds**: cut from four recordings released under **CC0 1.0** (public domain) on Freesound by el_boss, DarcyConroy, samchitto and aliyahb. CC0 allows copying, modifying and redistributing, commercially included, with no attribution required (credit is given anyway in [`sounds/SOURCES.md`](./packages/clacky/sounds/SOURCES.md)). If you pass your own `SoundPack`, make sure you have the rights to those files (Freesound's CC0 filter is a good source).
-- **CDN build and sounds**: the `<script>` (IIFE) build loads the selected switch's sprite from `cdn.jsdelivr.net`. If your site's Content Security Policy blocks that host, use the npm package (sounds are bundled) or add it to `connect-src`.
+- **CDN build and sounds**: the `<script>` (IIFE) build loads the selected switch's sprite from `cdn.jsdelivr.net`, with `unpkg.com` as a fallback. If your site's Content Security Policy blocks those hosts, use the npm package (sounds are bundled) or add them to `connect-src`.
 - **Dependencies**: Motion (MIT) is an optional peer dependency for the React wrapper only. The demo uses Next.js (MIT), Tailwind CSS (MIT), sugar-high (MIT), and the Geist font (SIL Open Font License).
 
 ---

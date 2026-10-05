@@ -31,7 +31,7 @@ for (const entry of ['index', 'element', 'react', 'server']) {
 
 const iife = readFileSync(join(root, 'dist/clacky.iife.js'));
 console.log(
-  `iife     ${kb(iife.length)} min ${kb(gzipSync(iife).length)} gzip  (sounds fetched from jsDelivr)`,
+  `iife     ${kb(iife.length)} min ${kb(gzipSync(iife).length)} gzip  (sounds fetched from jsDelivr or unpkg)`,
 );
 for (const file of readdirSync(join(root, 'dist')).filter((f) => soundChunk.test(f))) {
   const code = readFileSync(join(root, 'dist', file));

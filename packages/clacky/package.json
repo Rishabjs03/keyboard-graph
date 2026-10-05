@@ -1,6 +1,6 @@
 {
   "name": "clacky",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Your GitHub contribution graph as a grid of clickable mechanical keycaps, with tactile press animations and real switch sounds. React component + Web Component.",
   "license": "MIT",
   "author": "Rishab Agarwal (https://x.com/Yrishavjs)",
