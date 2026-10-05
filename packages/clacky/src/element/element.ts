@@ -256,8 +256,9 @@ export class ClackyElement extends Base implements ClackyHandle {
       this.#motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.#motionQuery.addEventListener('change', this.#onMotionChange);
     }
-    this.#audio.preload();
+    // After #update, so the sprite fetched is the configured one, not the default.
     this.#update();
+    this.#audio.preload();
   }
 
   disconnectedCallback(): void {
