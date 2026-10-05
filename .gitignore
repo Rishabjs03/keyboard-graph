@@ -12,3 +12,8 @@ coverage
 .DS_Store
 *.log
 next-env.d.ts
+.screenshots
+
+# Copied from the repo root at pack time
+packages/clacky/README.md
+packages/clacky/LICENSE

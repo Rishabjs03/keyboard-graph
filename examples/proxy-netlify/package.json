@@ -1,0 +1,8 @@
+{
+  "name": "clacky-proxy-netlify",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "clacky": "^0.1.0"
+  }
+}

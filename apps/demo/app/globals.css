@@ -1,0 +1,207 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-ink: #16120d;
+  --color-muted: #5c5245;
+  --color-faint: #7f7466;
+  --color-line: #ddd2c0;
+  --color-surface: #f6f1e8;
+  --color-paper: #fbf8f2;
+  --color-cardboard: #e4d9c6;
+  --color-sand: #ede4d4;
+  --color-line-strong: #c9bca6;
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Base styles live in the base layer so Tailwind utilities can override them. */
+@layer base {
+  :root {
+    color-scheme: light;
+    --clacky-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
+
+  html {
+    background-color: var(--color-cardboard);
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11';
+  }
+
+  /*
+   * Grainy cardboard: procedural SVG noise tiles on the page canvas: fine grain,
+   * short dark and light fibres, and soft mottling.
+   * Rasterised once per tile; no image files.
+   */
+  html {
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.28 0 0 0 0 0.2 0 0 0 0 0.11 0 0 0 0.42 -0.12'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='280'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.22 0.75' numOctaves='2' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.3 0 0 0 0 0.2 0 0 0 0 0.1 2.4 0 0 0 -1.42'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='260' height='260'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.2 0.7' numOctaves='2' seed='29' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.98 0 0 0 0 0.95 0 0 0 0 0.88 2.2 0 0 0 -1.32'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.0045' numOctaves='3' seed='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.32 0 0 0 0 0.17 0 0 0 0.38 -0.1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    background-size:
+      200px 200px,
+      280px 280px,
+      260px 260px,
+      720px 720px;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  /* Focus rings that feel native to the design. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+}
+
+/* Range input: thin track, keycap-like thumb. */
+.range {
+  appearance: none;
+  height: 22px;
+  background: transparent;
+  cursor: pointer;
+}
+.range::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-ink) var(--fill), #d8ccb8 var(--fill));
+}
+.range::-moz-range-track {
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-ink) var(--fill), #d8ccb8 var(--fill));
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -7px;
+  border-radius: 6px;
+  background: linear-gradient(#ffffff, #f1f1f3);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 0 rgb(0 0 0 / 0.12),
+    0 4px 10px -2px rgb(0 0 0 / 0.18);
+  transition: transform 0.15s var(--ease-out-soft);
+}
+.range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border: 0;
+  border-radius: 6px;
+  background: linear-gradient(#ffffff, #f1f1f3);
+  box-shadow:
+    0 0 0 1px rgb(0 0 0 / 0.1),
+    0 2px 0 rgb(0 0 0 / 0.12);
+}
+.range:active::-webkit-slider-thumb {
+  transform: translateY(1px) scale(0.96);
+}
+
+/* sugar-high token colours */
+.code {
+  --sh-class: #7c3aed;
+  --sh-identifier: #16120d;
+  --sh-sign: #8e8e93;
+  --sh-property: #0369a1;
+  --sh-entity: #0f766e;
+  --sh-jsxliterals: #16120d;
+  --sh-string: #15803d;
+  --sh-keyword: #be185d;
+  --sh-comment: #a1a1a6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Mini keycaps (theme swatches, colour pickers, logo) ─────────────────── */
+.mk {
+  --c: #ebedf0;
+  --skirt: color-mix(in oklab, var(--c), #1b1f24 30%);
+  --travel: 4px;
+  position: relative;
+  display: block;
+  border-radius: 11px;
+}
+.mk-shadow {
+  position: absolute;
+  inset: 22% 6% -6% 6%;
+  border-radius: inherit;
+  box-shadow: 0 8px 14px -6px rgb(60 42 18 / 0.34);
+  transition:
+    opacity 0.2s var(--ease-out-soft),
+    transform 0.2s var(--ease-out-soft);
+}
+.mk-skirt {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-color: var(--skirt);
+  background-image: linear-gradient(
+    90deg,
+    rgb(0 0 0 / 0.1),
+    transparent 22%,
+    transparent 78%,
+    rgb(0 0 0 / 0.1)
+  );
+  transition: background-color 0.45s ease;
+}
+.mk-cap {
+  position: absolute;
+  inset: 0 0 var(--travel) 0;
+  border-radius: inherit;
+  background: var(--face, var(--c));
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.55),
+    inset 0 0 0 0.5px rgb(0 0 0 / 0.07);
+  transition: background 0.45s ease;
+}
+.mk-cap::before {
+  content: '';
+  position: absolute;
+  inset: 12% 13% 15% 13%;
+  border-radius: 8px;
+  background-image:
+    radial-gradient(130% 100% at 50% 115%, rgb(255 255 255 / 0.28), rgb(255 255 255 / 0) 64%),
+    linear-gradient(180deg, rgb(0 0 0 / 0.08), rgb(0 0 0 / 0) 60%);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 0.1);
+}
+.mk-cap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 0.32),
+    rgb(255 255 255 / 0) 40%,
+    rgb(0 0 0 / 0.05)
+  );
+}
+.mk-legend {
+  position: absolute;
+  inset: 0 0 var(--travel) 0;
+  display: grid;
+  place-items: center;
+  z-index: 1;
+  font: 600 11px/1 var(--font-mono);
+  letter-spacing: 0.02em;
+}

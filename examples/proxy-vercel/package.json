@@ -1,0 +1,8 @@
+{
+  "name": "clacky-proxy-vercel",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "clacky": "^0.1.0"
+  }
+}
