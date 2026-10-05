@@ -40,6 +40,9 @@ jobs:
       - name: Test
         run: pnpm test
 
+      - name: Packaging smoke test (ESM + CJS + SSR)
+        run: pnpm --filter keyboard-graph smoke
+
       - name: Build demo
         run: pnpm --filter demo build
         env:

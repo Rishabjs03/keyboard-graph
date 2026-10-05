@@ -93,7 +93,8 @@
     "test:watch": "vitest",
     "size": "node scripts/size.mjs",
     "prepublishOnly": "pnpm build",
-    "prepack": "node scripts/copy-readme.mjs"
+    "prepack": "node scripts/copy-readme.mjs",
+    "smoke": "node scripts/smoke.mjs"
   },
   "peerDependencies": {
     "motion": ">=11.0.0",
