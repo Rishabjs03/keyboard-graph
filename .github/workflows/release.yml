@@ -31,8 +31,9 @@ jobs:
           cache: pnpm
           registry-url: https://registry.npmjs.org
 
-      # Trusted publishing needs npm 11.5.1 or newer.
-      - run: npm install -g npm@latest
+      # Trusted publishing needs npm 11.5.1 or newer. Pinned to 11: npm 12 requires a
+      # newer Node 22 patch release than runners may have.
+      - run: npm install -g npm@11
 
       - run: pnpm install --frozen-lockfile
 
