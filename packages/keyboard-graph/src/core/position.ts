@@ -11,7 +11,12 @@ export function trackTooltip(tooltip: HTMLElement, key: Element, onLost: () => v
     frame = 0;
     if (!key.isConnected) return onLost();
     const rect = key.getBoundingClientRect();
-    if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+    if (
+      rect.bottom < 0 ||
+      rect.top > window.innerHeight ||
+      rect.right < 0 ||
+      rect.left > window.innerWidth
+    ) {
       return onLost();
     }
     placeTooltip(tooltip, key);

@@ -19,8 +19,15 @@ for (const entry of entries) {
     },
   });
   const outputs = (Array.isArray(result) ? result : [result]).flatMap((r) => r.output);
-  const code = outputs.filter((o) => o.type === 'chunk').map((o) => o.code).join('\n');
-  console.log(`${entry.padEnd(8)} ${(code.length / 1024).toFixed(1).padStart(6)} kB min  ${(gzipSync(code).length / 1024).toFixed(1).padStart(5)} kB gzip`);
+  const code = outputs
+    .filter((o) => o.type === 'chunk')
+    .map((o) => o.code)
+    .join('\n');
+  console.log(
+    `${entry.padEnd(8)} ${(code.length / 1024).toFixed(1).padStart(6)} kB min  ${(gzipSync(code).length / 1024).toFixed(1).padStart(5)} kB gzip`,
+  );
 }
 const iife = readFileSync(join(root, 'dist/keyboard-graph.iife.js'));
-console.log(`iife     ${(iife.length / 1024).toFixed(1).padStart(6)} kB min  ${(gzipSync(iife).length / 1024).toFixed(1).padStart(5)} kB gzip`);
+console.log(
+  `iife     ${(iife.length / 1024).toFixed(1).padStart(6)} kB min  ${(gzipSync(iife).length / 1024).toFixed(1).padStart(5)} kB gzip`,
+);

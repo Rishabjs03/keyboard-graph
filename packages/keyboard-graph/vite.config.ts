@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite';
 
 /**
@@ -27,7 +28,8 @@ export default defineConfig({
         // Next.js / RSC: the React entry must start with the directive. Bundlers strip
         // module-level directives, so it is re-added to the emitted entry here.
         banner: (chunk) => (chunk.isEntry && chunk.name === 'react' ? "'use client';" : ''),
-        chunkFileNames: (chunk) => `chunks/[name]-[hash].${chunk.name.endsWith('.cjs') ? 'cjs' : 'js'}`,
+        chunkFileNames: (chunk) =>
+          `chunks/[name]-[hash].${chunk.name.endsWith('.cjs') ? 'cjs' : 'js'}`,
       },
     },
   },

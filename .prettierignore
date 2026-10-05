@@ -2,3 +2,6 @@ dist
 .next
 pnpm-lock.yaml
 coverage
+next-env.d.ts
+.screenshots
+.github/assets

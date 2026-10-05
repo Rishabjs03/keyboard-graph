@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeContributions } from '../src/core/data';
-import { boardDenominator, buildLayout, cellAt, initialFocusIndex, navigate, sameGeometry } from '../src/core/layout';
+import {
+  boardDenominator,
+  buildLayout,
+  cellAt,
+  initialFocusIndex,
+  navigate,
+  sameGeometry,
+} from '../src/core/layout';
 
 const year2026 = normalizeContributions([{ date: '2026-05-05', count: 1 }], { year: 2026 });
 
@@ -25,7 +32,20 @@ describe('buildLayout', () => {
 
   it('labels months without collisions', () => {
     const layout = buildLayout(year2026);
-    expect(layout.months.map((m) => m.label)).toEqual(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+    expect(layout.months.map((m) => m.label)).toEqual([
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ]);
     for (let i = 1; i < layout.months.length; i++) {
       expect(layout.months[i]!.col - layout.months[i - 1]!.col).toBeGreaterThanOrEqual(3);
     }
@@ -79,8 +99,12 @@ describe('navigate', () => {
 describe('geometry helpers', () => {
   it('detects identical geometry', () => {
     const a = buildLayout(year2026);
-    const b = buildLayout(normalizeContributions([{ date: '2026-02-02', count: 9 }], { year: 2026 }));
-    const c = buildLayout(normalizeContributions([{ date: '2025-02-02', count: 9 }], { year: 2025 }));
+    const b = buildLayout(
+      normalizeContributions([{ date: '2026-02-02', count: 9 }], { year: 2026 }),
+    );
+    const c = buildLayout(
+      normalizeContributions([{ date: '2025-02-02', count: 9 }], { year: 2025 }),
+    );
     expect(sameGeometry(a, b)).toBe(true);
     expect(sameGeometry(a, c)).toBe(false);
   });

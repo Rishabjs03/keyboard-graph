@@ -1,6 +1,12 @@
 import { parseSoundAttribute, SwitchAudio } from '../audio/engine.js';
 import { createWaapiAnimator, type KeyAnimator } from '../core/animator.js';
-import { KeyboardGraphError, loadContributions, normalizeContributions, parseYear, sumContributions } from '../core/data.js';
+import {
+  KeyboardGraphError,
+  loadContributions,
+  normalizeContributions,
+  parseYear,
+  sumContributions,
+} from '../core/data.js';
 import { localToday } from '../core/format.js';
 import { createGhostTyper, type GhostTyper } from '../core/ghost.js';
 import type { KeyboardGraphHandle } from '../core/handle.js';
@@ -43,7 +49,14 @@ import {
 import { keyboardGraphCSS } from '../core/styles.js';
 import { parseThemeAttribute } from '../core/theme.js';
 import { hideFromTopLayer, placeTooltip, showInTopLayer } from '../core/tooltip.js';
-import type { ContributionDay, GraphLayout, KeyCell, YearSelection } from '../core/types.js';
+import type {
+  ContributionDay,
+  GraphLayout,
+  KeyCell,
+  KeyPressDetail,
+  LoadDetail,
+  YearSelection,
+} from '../core/types.js';
 import { scrollToLatest, whenVisible } from '../core/visibility.js';
 
 type Parser = (value: string | null) => unknown;
@@ -100,7 +113,10 @@ const ATTRIBUTES: Record<string, [keyof KeyboardGraphOptions, Parser]> = {
       return v.split(',').map((s) => parseYear(s.trim()));
     },
   ],
-  'week-start': ['weekStart', (v) => (v === null ? undefined : v === '1' || v.toLowerCase() === 'monday' ? 1 : 0)],
+  'week-start': [
+    'weekStart',
+    (v) => (v === null ? undefined : v === '1' || v.toLowerCase() === 'monday' ? 1 : 0),
+  ],
   plate: ['plate', bool],
   entrance: ['entrance', bool],
   ripple: ['ripple', bool],
@@ -112,10 +128,38 @@ const ATTRIBUTES: Record<string, [keyof KeyboardGraphOptions, Parser]> = {
 };
 
 const OPTION_KEYS: (keyof KeyboardGraphOptions)[] = [
-  'username', 'year', 'data', 'fetcher', 'endpoint', 'theme', 'colorScheme', 'sound', 'volume', 'muted',
-  'keySize', 'gap', 'radius', 'minKeySize', 'responsive', 'showMonthLabels', 'showDayLabels', 'showTotal',
-  'showLegend', 'yearSelector', 'weekStart', 'plate', 'entrance', 'ripple', 'tooltip', 'ghostTyping',
-  'themeTransition', 'reducedMotion', 'locale', 'formatTooltip', 'formatAriaLabel', 'formatTotal',
+  'username',
+  'year',
+  'data',
+  'fetcher',
+  'endpoint',
+  'theme',
+  'colorScheme',
+  'sound',
+  'volume',
+  'muted',
+  'keySize',
+  'gap',
+  'radius',
+  'minKeySize',
+  'responsive',
+  'showMonthLabels',
+  'showDayLabels',
+  'showTotal',
+  'showLegend',
+  'yearSelector',
+  'weekStart',
+  'plate',
+  'entrance',
+  'ripple',
+  'tooltip',
+  'ghostTyping',
+  'themeTransition',
+  'reducedMotion',
+  'locale',
+  'formatTooltip',
+  'formatAriaLabel',
+  'formatTotal',
 ];
 
 const HOST_CSS = ':host{display:block;min-width:0}:host([hidden]){display:none}';
@@ -143,8 +187,8 @@ function adoptStyles(shadow: ShadowRoot) {
 const Base = (typeof HTMLElement !== 'undefined' ? HTMLElement : class {}) as typeof HTMLElement;
 
 export interface KeyboardGraphEventMap {
-  'kg-keypress': CustomEvent<import('../core/types.js').KeyPressDetail>;
-  'kg-load': CustomEvent<import('../core/types.js').LoadDetail>;
+  'kg-keypress': CustomEvent<KeyPressDetail>;
+  'kg-load': CustomEvent<LoadDetail>;
   'kg-error': CustomEvent<{ error: KeyboardGraphError }>;
   'kg-yearchange': CustomEvent<{ year: YearSelection }>;
 }
@@ -157,6 +201,9 @@ export interface KeyboardGraphEventMap {
  * `el.theme = { levels: [...] }`). Listen for `kg-keypress`, `kg-load`, `kg-error`
  * and `kg-yearchange` events.
  */
+// Options are exposed as accessors defined at runtime (see below), typed via the
+// merged interface at the bottom of this file.
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
   static get observedAttributes(): string[] {
     return Object.keys(ATTRIBUTES);
@@ -275,7 +322,8 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
   // ── Internals ──────────────────────────────────────────────────────────────
   #indexOf(target: string | number): number {
     if (!this.#layout) return -1;
-    if (typeof target === 'number') return target >= 0 && target < this.#layout.cells.length ? target : -1;
+    if (typeof target === 'number')
+      return target >= 0 && target < this.#layout.cells.length ? target : -1;
     return this.#layout.cells.findIndex((c) => c.date === target);
   }
 
@@ -336,7 +384,9 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     if (this.hasAttribute('year') || this.#props.year !== undefined) {
       this.#props = { ...this.#props, year };
     }
-    this.dispatchEvent(new CustomEvent('kg-yearchange', { detail: { year }, bubbles: true, composed: true }));
+    this.dispatchEvent(
+      new CustomEvent('kg-yearchange', { detail: { year }, bubbles: true, composed: true }),
+    );
     this.#schedule();
   };
 
@@ -364,7 +414,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     this.#applyTheme(o);
 
     const year = this.#effectiveYear(o);
-    const sourceKey = JSON.stringify([o.username ?? '', year, o.endpoint ?? '', o.weekStart]) + (o.data ? `#${this.#dataId(o.data)}` : '') + (o.fetcher ? `#f${this.#fnId(o.fetcher)}` : '');
+    const sourceKey =
+      JSON.stringify([o.username ?? '', year, o.endpoint ?? '', o.weekStart]) +
+      (o.data ? `#${this.#dataId(o.data)}` : '') +
+      (o.fetcher ? `#f${this.#fnId(o.fetcher)}` : '');
     if (sourceKey !== this.#sourceKey) {
       this.#sourceKey = sourceKey;
       this.#load(o, year);
@@ -387,7 +440,8 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
   #applyRoot(o: ResolvedOptions) {
     const attrs = rootDataAttributes(o, this.#state, this.#reduced);
     for (const [name, value] of Object.entries(attrs)) this.#root.setAttribute(name, value);
-    for (const [name, value] of Object.entries(rootStyleVars(o))) this.#root.style.setProperty(name, value);
+    for (const [name, value] of Object.entries(rootStyleVars(o)))
+      this.#root.style.setProperty(name, value);
   }
 
   #applyTheme(o: ResolvedOptions) {
@@ -400,10 +454,16 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     if (!first && transition && grid && this.#layout && this.#controller && !this.#reduced) {
       // Measure before the colours change so the browser sees the new delays and
       // the new colours in the same style pass.
-      const delays = sweepDelays(this.#layout, grid.getBoundingClientRect(), transition.origin, transition.stagger);
+      const delays = sweepDelays(
+        this.#layout,
+        grid.getBoundingClientRect(),
+        transition.origin,
+        transition.stagger,
+      );
       applyDelays(this.#controller.keyElements(), delays);
     }
-    for (const [name, value] of Object.entries(themeStyleVars(o.theme))) this.#root.style.setProperty(name, value);
+    for (const [name, value] of Object.entries(themeStyleVars(o.theme)))
+      this.#root.style.setProperty(name, value);
   }
 
   async #load(o: ResolvedOptions, year: YearSelection) {
@@ -413,7 +473,9 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
 
     if (o.data) {
       try {
-        const days = normalizeContributions(o.data, { year: typeof o.year === 'number' ? o.year : null });
+        const days = normalizeContributions(o.data, {
+          year: typeof o.year === 'number' ? o.year : null,
+        });
         this.#setData(days, sumContributions(days), o, null);
       } catch (error) {
         this.#setError(error, o);
@@ -448,7 +510,11 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
       if (controller.signal.aborted) return;
       this.#setData(result.days, result.total, o, year);
     } catch (error) {
-      if (controller.signal.aborted || (error instanceof KeyboardGraphError && error.code === 'aborted')) return;
+      if (
+        controller.signal.aborted ||
+        (error instanceof KeyboardGraphError && error.code === 'aborted')
+      )
+        return;
       this.#setError(error, o);
     } finally {
       if (this.#abort === controller) this.#root.removeAttribute('data-busy');
@@ -473,12 +539,20 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
 
   #setError(error: unknown, o: ResolvedOptions) {
     this.#error =
-      error instanceof KeyboardGraphError ? error : new KeyboardGraphError('network', error instanceof Error ? error.message : String(error));
+      error instanceof KeyboardGraphError
+        ? error
+        : new KeyboardGraphError('network', error instanceof Error ? error.message : String(error));
     this.#state = 'error';
     this.#days = null;
     this.#render(o);
     this.#live.textContent = this.#error.message;
-    this.dispatchEvent(new CustomEvent('kg-error', { detail: { error: this.#error }, bubbles: true, composed: true }));
+    this.dispatchEvent(
+      new CustomEvent('kg-error', {
+        detail: { error: this.#error },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   #render(o: ResolvedOptions) {
@@ -486,11 +560,14 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     const year = o.data ? null : this.#loadedYear;
     const days = this.#state === 'ready' ? this.#days : null;
     const previous = this.#layout;
-    const layout = days ? buildLayout(days, { weekStart: o.weekStart, locale: o.locale, today: localToday() }) : null;
+    const layout = days
+      ? buildLayout(days, { weekStart: o.weekStart, locale: o.locale, today: localToday() })
+      : null;
     this.#layout = layout;
 
     const columns = layout?.columns ?? SKELETON_COLUMNS;
-    for (const [name, value] of Object.entries(frameStyleVars(columns, o))) this.#frame.style.setProperty(name, value);
+    for (const [name, value] of Object.entries(frameStyleVars(columns, o)))
+      this.#frame.style.setProperty(name, value);
 
     this.#renderHeader(o, layout, year);
     this.#renderFooter(o);
@@ -505,7 +582,12 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
       return;
     }
 
-    const boardKey = JSON.stringify([o.showDayLabels, o.showMonthLabels, o.locale, !!o.formatAriaLabel]);
+    const boardKey = JSON.stringify([
+      o.showDayLabels,
+      o.showMonthLabels,
+      o.locale,
+      !!o.formatAriaLabel,
+    ]);
     const grid = this.#plate.querySelector<HTMLElement>('.kg-grid[role="group"]');
     if (grid && this.#controller && boardKey === this.#boardKey && sameGeometry(previous, layout)) {
       if (!this.#sameDays(previous!, layout)) this.#morph(grid, layout, o);
@@ -515,7 +597,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
 
     this.#boardKey = boardKey;
     this.#teardownGrid();
-    this.#plate.innerHTML = boardHTML(layout, o, { label: gridLabel(o.username, year), hintId: 'kg-hint' });
+    this.#plate.innerHTML = boardHTML(layout, o, {
+      label: gridLabel(o.username, year),
+      hintId: 'kg-hint',
+    });
     const newGrid = this.#plate.querySelector<HTMLElement>('.kg-grid')!;
     this.#controller = createInteractions({
       grid: newGrid,
@@ -525,7 +610,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
       audio: this.#audio,
       ripple: o.ripple,
       tooltip: o.tooltip,
-      onPress: (detail) => this.dispatchEvent(new CustomEvent('kg-keypress', { detail, bubbles: true, composed: true })),
+      onPress: (detail) =>
+        this.dispatchEvent(
+          new CustomEvent('kg-keypress', { detail, bubbles: true, composed: true }),
+        ),
       onTooltip: (cell, key) => (cell && key ? this.#showTooltip(cell, key) : this.#hideTooltip()),
     });
     scrollToLatest(this.#scroller);
@@ -534,7 +622,11 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
   }
 
   #sameDays(a: GraphLayout, b: GraphLayout) {
-    return a.start === b.start && a.end === b.end && a.cells.every((c, i) => c.count === b.cells[i]!.count && c.level === b.cells[i]!.level);
+    return (
+      a.start === b.start &&
+      a.end === b.end &&
+      a.cells.every((c, i) => c.count === b.cells[i]!.count && c.level === b.cells[i]!.level)
+    );
   }
 
   /** Same grid shape, new data (e.g. another year): recolour keys in place with a left-to-right wave. */
@@ -542,7 +634,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     const keys = this.#controller!.keyElements();
     const transition = transitionSettings(o.themeTransition);
     if (transition && !this.#reduced) {
-      applyDelays(keys, sweepDelays(layout, grid.getBoundingClientRect(), null, transition.stagger));
+      applyDelays(
+        keys,
+        sweepDelays(layout, grid.getBoundingClientRect(), null, transition.stagger),
+      );
     }
     for (const cell of layout.cells) {
       const key = keys[cell.index];
@@ -556,7 +651,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
     const months = this.#plate.querySelector('.kg-months');
     if (months) {
       months.innerHTML = layout.months
-        .map((m) => `<span class="kg-month" style="grid-column:${m.col + 1}">${escapeHTML(m.label)}</span>`)
+        .map(
+          (m) =>
+            `<span class="kg-month" style="grid-column:${m.col + 1}">${escapeHTML(m.label)}</span>`,
+        )
         .join('');
     }
     this.#controller!.setLayout(layout);
@@ -617,8 +715,11 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
       return;
     }
     this.#header.hidden = false;
-    const total = showTotal ? `<p class="kg-total" part="total">${escapeHTML(totalLabel(layout.total, year, o))}</p>` : '<span></span>';
-    this.#header.innerHTML = total + (years.length > 0 ? yearSelectorHTML(years, this.#effectiveYear(o)) : '');
+    const total = showTotal
+      ? `<p class="kg-total" part="total">${escapeHTML(totalLabel(layout.total, year, o))}</p>`
+      : '<span></span>';
+    this.#header.innerHTML =
+      total + (years.length > 0 ? yearSelectorHTML(years, this.#effectiveYear(o)) : '');
   }
 
   #renderFooter(o: ResolvedOptions) {
@@ -641,7 +742,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
         this.#reduced
           ? [{ opacity: 0 }, { opacity: 1 }]
           : [
-              { opacity: 0, transform: `translateY(${tip.dataset.placement === 'bottom' ? -4 : 4}px) scale(.94)` },
+              {
+                opacity: 0,
+                transform: `translateY(${tip.dataset.placement === 'bottom' ? -4 : 4}px) scale(.94)`,
+              },
               { opacity: 1, transform: 'none' },
             ],
         { duration: 170, easing: 'cubic-bezier(.2,.9,.25,1.15)' },
@@ -660,7 +764,10 @@ export class KeyboardGraphElement extends Base implements KeyboardGraphHandle {
       hideFromTopLayer(tip);
       return;
     }
-    const out = tip.animate([{ opacity: 1 }, { opacity: 0, transform: 'scale(.97)' }], { duration: 120, easing: 'ease-in' });
+    const out = tip.animate([{ opacity: 1 }, { opacity: 0, transform: 'scale(.97)' }], {
+      duration: 120,
+      easing: 'ease-in',
+    });
     this.#tooltipOut = out;
     out.addEventListener('finish', () => {
       if (this.#tooltipOut === out) hideFromTopLayer(tip);
@@ -705,17 +812,28 @@ export interface KeyboardGraphElement extends KeyboardGraphOptions {
     listener: (this: KeyboardGraphElement, event: KeyboardGraphEventMap[K]) => void,
     options?: boolean | AddEventListenerOptions,
   ): void;
-  addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+  addEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
   removeEventListener<K extends keyof KeyboardGraphEventMap>(
     type: K,
     listener: (this: KeyboardGraphElement, event: KeyboardGraphEventMap[K]) => void,
     options?: boolean | EventListenerOptions,
   ): void;
-  removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+  removeEventListener(
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | EventListenerOptions,
+  ): void;
 }
 
 /** Register the custom element (no-op on the server or if already defined). */
 export function defineKeyboardGraph(tagName = 'keyboard-graph'): void {
   if (typeof customElements === 'undefined' || customElements.get(tagName)) return;
-  customElements.define(tagName, tagName === 'keyboard-graph' ? KeyboardGraphElement : class extends KeyboardGraphElement {});
+  customElements.define(
+    tagName,
+    tagName === 'keyboard-graph' ? KeyboardGraphElement : class extends KeyboardGraphElement {},
+  );
 }

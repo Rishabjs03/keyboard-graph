@@ -62,7 +62,13 @@ interface GraphQLResponse {
       contributionsCollection: {
         contributionCalendar: {
           totalContributions: number;
-          weeks: { contributionDays: { date: string; contributionCount: number; contributionLevel: string }[] }[];
+          weeks: {
+            contributionDays: {
+              date: string;
+              contributionCount: number;
+              contributionLevel: string;
+            }[];
+          }[];
         };
       };
     } | null;
@@ -74,7 +80,9 @@ interface GraphQLResponse {
  * Returns `{ total, contributions }` in the same shape as the default public API,
  * so the component can consume it directly via `endpoint`.
  */
-export async function fetchGitHubContributions(options: FetchGitHubContributionsOptions): Promise<ContributionsApiResponse> {
+export async function fetchGitHubContributions(
+  options: FetchGitHubContributionsOptions,
+): Promise<ContributionsApiResponse> {
   const { token, username, year = 'last', apiUrl = GITHUB_GRAPHQL_URL, signal } = options;
   if (!token) throw new GitHubContributionsError('Missing GitHub token.', 500);
 
@@ -97,18 +105,32 @@ export async function fetchGitHubContributions(options: FetchGitHubContributions
     signal,
   });
 
-  if (response.status === 401) throw new GitHubContributionsError('GitHub rejected the token.', 401);
-  if (response.status === 403 || response.status === 429) {
-    throw new GitHubContributionsError('GitHub API rate limit exceeded.', 429);
+  if (response.status === 401) {
+    throw new GitHubContributionsError('GitHub rejected the token.', 401);
   }
-  if (!response.ok) throw new GitHubContributionsError(`GitHub API responded with ${response.status}.`, 502);
+  const rateLimited =
+    response.status === 429 ||
+    (response.status === 403 && response.headers.get('x-ratelimit-remaining') === '0');
+  if (rateLimited) throw new GitHubContributionsError('GitHub API rate limit exceeded.', 429);
+  if (response.status === 403) {
+    const body = (await response.json().catch(() => null)) as { message?: string } | null;
+    throw new GitHubContributionsError(
+      `GitHub refused the request${body?.message ? `: ${body.message}` : '.'}`,
+      403,
+    );
+  }
+  if (!response.ok)
+    throw new GitHubContributionsError(`GitHub API responded with ${response.status}.`, 502);
 
   const json = (await response.json()) as GraphQLResponse;
   if (json.errors?.some((e) => e.type === 'NOT_FOUND') || json.data?.user === null) {
     throw new GitHubContributionsError(`GitHub user "${username}" not found.`, 404);
   }
   if (json.errors?.length || !json.data?.user) {
-    throw new GitHubContributionsError(json.errors?.[0]?.message ?? 'Unexpected GitHub API response.', 502);
+    throw new GitHubContributionsError(
+      json.errors?.[0]?.message ?? 'Unexpected GitHub API response.',
+      502,
+    );
   }
 
   const calendar = json.data.user.contributionsCollection.contributionCalendar;
@@ -157,7 +179,8 @@ export function createContributionsHandler(options: ContributionsHandlerOptions 
   return async function handler(request: Request): Promise<Response> {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
     const url = new URL(request.url);
-    const username = url.searchParams.get('username') ?? url.pathname.split('/').filter(Boolean).pop() ?? '';
+    const username =
+      url.searchParams.get('username') ?? url.pathname.split('/').filter(Boolean).pop() ?? '';
     const yearParam = url.searchParams.get('y') ?? url.searchParams.get('year') ?? 'last';
     const year: YearSelection = /^\d{4}$/.test(yearParam) ? Number(yearParam) : 'last';
 
@@ -179,7 +202,11 @@ export function createContributionsHandler(options: ContributionsHandlerOptions 
     } catch (error) {
       const status = error instanceof GitHubContributionsError ? error.status : 500;
       const message = error instanceof Error ? error.message : 'Unknown error.';
-      return json({ error: message }, status, status === 404 ? { 'Cache-Control': 'public, s-maxage=600' } : {});
+      return json(
+        { error: message },
+        status,
+        status === 404 ? { 'Cache-Control': 'public, s-maxage=600' } : {},
+      );
     }
   };
 }

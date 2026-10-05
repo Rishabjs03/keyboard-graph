@@ -16,7 +16,10 @@ const MIN_MONTH_GAP = 3;
  * Place days on a 7-row week grid, exactly like GitHub's calendar: one column per
  * week, one row per weekday. The first and last columns may be partial.
  */
-export function buildLayout(days: readonly ContributionDay[], options: LayoutOptions = {}): GraphLayout {
+export function buildLayout(
+  days: readonly ContributionDay[],
+  options: LayoutOptions = {},
+): GraphLayout {
   const weekStart = options.weekStart ?? 0;
   const { locale, today } = options;
 
@@ -110,14 +113,7 @@ export function cellAt(layout: GraphLayout, col: number, row: number): number {
 }
 
 export type NavigationKey =
-  | 'ArrowLeft'
-  | 'ArrowRight'
-  | 'ArrowUp'
-  | 'ArrowDown'
-  | 'Home'
-  | 'End'
-  | 'PageUp'
-  | 'PageDown';
+  'ArrowLeft' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Home' | 'End' | 'PageUp' | 'PageDown';
 
 /**
  * Resolve keyboard navigation on the grid. Left/Right move by week, Up/Down by day,
@@ -216,7 +212,11 @@ export const DAY_LABEL_WIDTH = 1.9;
  * Width of the whole board measured in key sizes, so CSS can solve
  * `keySize = availableWidth / denominator` for responsive scaling.
  */
-export function boardDenominator(columns: number, gapRatio: number, showDayLabels: boolean): number {
+export function boardDenominator(
+  columns: number,
+  gapRatio: number,
+  showDayLabels: boolean,
+): number {
   const labelColumns = showDayLabels ? DAY_LABEL_WIDTH : 0;
   const gaps = Math.max(0, columns - 1) + (showDayLabels ? 1 : 0);
   return Number((columns + labelColumns + gaps * gapRatio).toFixed(4));

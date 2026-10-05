@@ -71,7 +71,9 @@ describe('helpers', () => {
   });
 
   it('builds endpoint URLs', () => {
-    expect(buildEndpointUrl('https://x.dev/{username}?y={year}', 'octo cat', 2025)).toBe('https://x.dev/octo%20cat?y=2025');
+    expect(buildEndpointUrl('https://x.dev/{username}?y={year}', 'octo cat', 2025)).toBe(
+      'https://x.dev/octo%20cat?y=2025',
+    );
   });
 
   it('validates usernames like GitHub does', () => {
@@ -111,8 +113,14 @@ describe('loadContributions', () => {
   });
 
   it('fetches, normalises and caches by URL', async () => {
-    const fetchMock = vi.fn(async () =>
-      new Response(JSON.stringify({ total: { lastYear: 3 }, contributions: [{ date: '2026-01-01', count: 3, level: 2 }] })),
+    const fetchMock = vi.fn(
+      async (_url: string) =>
+        new Response(
+          JSON.stringify({
+            total: { lastYear: 3 },
+            contributions: [{ date: '2026-01-01', count: 3, level: 2 }],
+          }),
+        ),
     );
     vi.stubGlobal('fetch', fetchMock);
     const first = await loadContributions({ username: 'octocat', year: 'last' });
@@ -120,14 +128,20 @@ describe('loadContributions', () => {
     expect(first.total).toBe(3);
     expect(second.days).toEqual(first.days);
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(fetchMock.mock.calls[0]![0]).toBe('https://github-contributions-api.jogruber.de/v4/octocat?y=last');
+    expect(fetchMock.mock.calls[0]![0]).toBe(
+      'https://github-contributions-api.jogruber.de/v4/octocat?y=last',
+    );
   });
 
   it('maps 404 to a not-found error and does not cache failures', async () => {
     const fetchMock = vi.fn(async () => new Response('{}', { status: 404 }));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(loadContributions({ username: 'ghost-user', year: 'last' })).rejects.toMatchObject({ code: 'not-found' });
-    await expect(loadContributions({ username: 'ghost-user', year: 'last' })).rejects.toMatchObject({ code: 'not-found' });
+    await expect(loadContributions({ username: 'ghost-user', year: 'last' })).rejects.toMatchObject(
+      { code: 'not-found' },
+    );
+    await expect(loadContributions({ username: 'ghost-user', year: 'last' })).rejects.toMatchObject(
+      { code: 'not-found' },
+    );
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
@@ -144,7 +158,12 @@ describe('loadContributions', () => {
   it('rejects with an aborted error when the signal fires', async () => {
     const controller = new AbortController();
     const fetcher = () => new Promise<never>(() => undefined);
-    const promise = loadContributions({ username: 'x', year: 'last', fetcher, signal: controller.signal });
+    const promise = loadContributions({
+      username: 'x',
+      year: 'last',
+      fetcher,
+      signal: controller.signal,
+    });
     controller.abort();
     await expect(promise).rejects.toMatchObject({ code: 'aborted' });
   });

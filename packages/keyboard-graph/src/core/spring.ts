@@ -17,7 +17,11 @@ const cache = new Map<string, SampledSpring>();
  * Integrate a damped spring once and sample it, so WAAPI can play real spring
  * physics as plain linear keyframes on the compositor (no JS per frame).
  */
-export function sampleSpring({ stiffness = 700, damping = 24, mass = 1 }: SpringConfig = {}): SampledSpring {
+export function sampleSpring({
+  stiffness = 700,
+  damping = 24,
+  mass = 1,
+}: SpringConfig = {}): SampledSpring {
   const key = `${stiffness}|${damping}|${mass}`;
   const hit = cache.get(key);
   if (hit) return hit;

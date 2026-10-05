@@ -60,7 +60,12 @@ export function createWaapiAnimator({ reducedMotion }: AnimatorOptions): KeyAnim
   const channels = new WeakMap<Element, Animation[]>();
   const held = new WeakSet<Element>();
 
-  const run = (el: Element, keyframes: Keyframe[], options: KeyframeAnimationOptions, exclusive = true) => {
+  const run = (
+    el: Element,
+    keyframes: Keyframe[],
+    options: KeyframeAnimationOptions,
+    exclusive = true,
+  ) => {
     if (typeof el.animate !== 'function') return null;
     const animation = el.animate(keyframes, options);
     if (exclusive) {
@@ -77,7 +82,11 @@ export function createWaapiAnimator({ reducedMotion }: AnimatorOptions): KeyAnim
     const cleanup = () => {
       live.delete(animation);
       const list = channels.get(el);
-      if (list) channels.set(el, list.filter((a) => a !== animation));
+      if (list)
+        channels.set(
+          el,
+          list.filter((a) => a !== animation),
+        );
     };
     animation.addEventListener('finish', cleanup);
     animation.addEventListener('cancel', cleanup);
@@ -99,7 +108,10 @@ export function createWaapiAnimator({ reducedMotion }: AnimatorOptions): KeyAnim
       );
       run(
         shadow,
-        [{ transform: 'none', opacity: 1 }, { transform: pressedShadow(depth), opacity: 0.55 }],
+        [
+          { transform: 'none', opacity: 1 },
+          { transform: pressedShadow(depth), opacity: 0.55 },
+        ],
         { duration: PRESS_MS, easing: PRESS_EASE, fill: 'forwards' },
       );
     },
@@ -176,7 +188,12 @@ export function createWaapiAnimator({ reducedMotion }: AnimatorOptions): KeyAnim
         opacity: Math.min(1, i / last / 0.2),
       }));
       keys.forEach((key, i) => {
-        run(key, frames, { duration, delay: delays[i] ?? 0, easing: 'linear', fill: 'backwards' }, false);
+        run(
+          key,
+          frames,
+          { duration, delay: delays[i] ?? 0, easing: 'linear', fill: 'backwards' },
+          false,
+        );
       });
     },
 

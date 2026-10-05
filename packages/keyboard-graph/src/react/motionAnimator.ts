@@ -85,7 +85,10 @@ export function createMotionAnimator({ reducedMotion }: AnimatorOptions): KeyAni
         { duration: 0.7, ease: [0.15, 0.6, 0.3, 1] },
       );
       track(controls);
-      void controls.finished.then(() => el.remove(), () => el.remove());
+      void controls.finished.then(
+        () => el.remove(),
+        () => el.remove(),
+      );
     },
 
     entrance(keys, delays) {
@@ -99,14 +102,31 @@ export function createMotionAnimator({ reducedMotion }: AnimatorOptions): KeyAni
       });
       const delayOf = (i: number) => seconds[i] ?? 0;
       // Transform springs into place; opacity is a short tween so it never overshoots.
-      track(
+      const drop = track(
         animate(
           list,
           { transform: ['translateY(-70%) scale(1.08)', REST] },
           { type: 'spring', ...springs.settle, delay: (i) => delayOf(i) },
         ),
       );
-      track(animate(list, { opacity: [0, 1] }, { duration: 0.18, ease: 'easeOut', delay: (i) => delayOf(i) }));
+      const fade = track(
+        animate(
+          list,
+          { opacity: [0, 1] },
+          { duration: 0.18, ease: 'easeOut', delay: (i) => delayOf(i) },
+        ),
+      );
+      // Motion commits final values as inline styles; drop them so the stylesheet's
+      // hover lift (a transform on the key) keeps working.
+      void Promise.all([drop.finished, fade.finished]).then(
+        () => {
+          for (const key of list) {
+            key.style.removeProperty('transform');
+            key.style.removeProperty('opacity');
+          }
+        },
+        () => undefined,
+      );
     },
 
     cancelAll() {

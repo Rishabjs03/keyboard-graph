@@ -1,6 +1,17 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { KeyboardGraphError, loadContributions, normalizeContributions, sumContributions } from '../core/data.js';
-import type { ContributionDay, ContributionInput, ContributionsFetcher, LoadDetail, YearSelection } from '../core/types.js';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import {
+  KeyboardGraphError,
+  loadContributions,
+  normalizeContributions,
+  sumContributions,
+} from '../core/data.js';
+import type {
+  ContributionDay,
+  ContributionInput,
+  ContributionsFetcher,
+  LoadDetail,
+  YearSelection,
+} from '../core/types.js';
 
 export interface UseContributionsOptions {
   username?: string;
@@ -47,6 +58,8 @@ function signature(data: readonly ContributionInput[] | undefined): string {
   return `${data.length}|${data[0]?.date}|${data[data.length - 1]?.date}|${sum}|${levels}`;
 }
 
+const useIsoLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
 const toError = (error: unknown) =>
   error instanceof KeyboardGraphError
     ? error
@@ -58,10 +71,15 @@ const toError = (error: unknown) =>
  */
 export function useContributions(options: UseContributionsOptions): UseContributionsResult {
   const { username, year, data, fetcher, endpoint } = options;
+  // Latest callbacks/fetcher without re-running the fetch effect when their identity
+  // changes (inline arrow props are common). Refs are synced after render, before
+  // any passive effect reads them.
   const callbacks = useRef(options);
-  callbacks.current = options;
   const fetcherRef = useRef(fetcher);
-  fetcherRef.current = fetcher;
+  useIsoLayoutEffect(() => {
+    callbacks.current = options;
+    fetcherRef.current = fetcher;
+  });
   const [nonce, setNonce] = useState(0);
   const retry = useCallback(() => setNonce((n) => n + 1), []);
 
@@ -79,6 +97,7 @@ export function useContributions(options: UseContributionsOptions): UseContribut
   }, [dataKey, staticYear]);
 
   const remoteEnabled = !data && Boolean(username || fetcher);
+  const hasFetcher = Boolean(fetcher);
   const [remote, setRemote] = useState<RemoteState>(() => ({
     status: remoteEnabled ? 'loading' : 'empty',
     days: null,
@@ -95,9 +114,17 @@ export function useContributions(options: UseContributionsOptions): UseContribut
     }
     const controller = new AbortController();
     setRemote((prev) =>
-      prev.status === 'ready' ? { ...prev, busy: true } : { ...prev, status: 'loading', error: null, busy: false },
+      prev.status === 'ready'
+        ? { ...prev, busy: true }
+        : { ...prev, status: 'loading', error: null, busy: false },
     );
-    loadContributions({ username: username ?? '', year, endpoint, fetcher: fetcherRef.current, signal: controller.signal }).then(
+    loadContributions({
+      username: username ?? '',
+      year,
+      endpoint,
+      fetcher: fetcherRef.current,
+      signal: controller.signal,
+    }).then(
       (result) => {
         if (controller.signal.aborted) return;
         setRemote({
@@ -108,7 +135,12 @@ export function useContributions(options: UseContributionsOptions): UseContribut
           error: null,
           busy: false,
         });
-        callbacks.current.onLoad?.({ days: result.days, total: result.total, year, username: username ?? null });
+        callbacks.current.onLoad?.({
+          days: result.days,
+          total: result.total,
+          year,
+          username: username ?? null,
+        });
       },
       (error: unknown) => {
         if (controller.signal.aborted) return;
@@ -119,13 +151,19 @@ export function useContributions(options: UseContributionsOptions): UseContribut
       },
     );
     return () => controller.abort();
-  }, [remoteEnabled, username, year, endpoint, Boolean(fetcher), nonce]);
+  }, [remoteEnabled, username, year, endpoint, hasFetcher, nonce]);
 
   // Fire onLoad / onError for static data too.
   useEffect(() => {
     if (!local) return;
     if (local.error) callbacks.current.onError?.(local.error);
-    else if (local.days) callbacks.current.onLoad?.({ days: local.days, total: local.total, year: staticYear, username: username ?? null });
+    else if (local.days)
+      callbacks.current.onLoad?.({
+        days: local.days,
+        total: local.total,
+        year: staticYear,
+        username: username ?? null,
+      });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [local]);
 

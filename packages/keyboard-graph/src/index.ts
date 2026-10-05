@@ -46,7 +46,13 @@ export {
   type LoadedContributions,
 } from './core/data.js';
 
-export { buildLayout, cellAt, navigate, initialFocusIndex, type LayoutOptions } from './core/layout.js';
+export {
+  buildLayout,
+  cellAt,
+  navigate,
+  initialFocusIndex,
+  type LayoutOptions,
+} from './core/layout.js';
 
 export {
   formatAriaLabel,
@@ -77,7 +83,11 @@ export {
 
 export { keyboardGraphCSS } from './core/styles.js';
 
-export { defaults, type KeyboardGraphOptions, type ThemeTransitionOptions } from './core/options.js';
+export {
+  defaults,
+  type KeyboardGraphOptions,
+  type ThemeTransitionOptions,
+} from './core/options.js';
 
 export {
   createInteractions,
@@ -87,7 +97,12 @@ export {
   type ProgrammaticPress,
 } from './core/interactions.js';
 
-export { createWaapiAnimator, KEY_TRAVEL, type KeyAnimator, type KeyParts } from './core/animator.js';
+export {
+  createWaapiAnimator,
+  KEY_TRAVEL,
+  type KeyAnimator,
+  type KeyParts,
+} from './core/animator.js';
 export { sampleSpring, springs, type SpringConfig } from './core/spring.js';
 export { computeTooltipPosition, type TooltipPosition } from './core/tooltip.js';
 export { createGhostTyper, type GhostTypingOptions, type GhostTyper } from './core/ghost.js';

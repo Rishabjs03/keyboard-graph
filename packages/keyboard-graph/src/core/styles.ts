@@ -51,6 +51,7 @@ color:var(--_text);font-family:var(--_font);font-size:12px;line-height:1.4;
 
 .kg-header,.kg-footer{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;
 width:min(100%,var(--_board-w));margin-inline:auto}
+.kg-header[hidden],.kg-footer[hidden]{display:none}
 .kg-header{margin-bottom:10px;min-height:24px}
 .kg-footer{margin-top:10px;min-height:16px}
 .kg-total{margin:0;font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-.005em}
@@ -159,10 +160,10 @@ border-bottom-right-radius:2px;transform:rotate(45deg)}
 
 .kg-sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 
-.kg-root[data-motion="reduce"] .kg-key,.kg-root[data-motion="reduce"] .kg-key:hover{transition:none;transform:none}
+.kg-root[data-motion="reduce"] .kg-key,.kg-root[data-motion="reduce"] .kg-key:hover,.kg-root[data-motion="reduce"] .kg-key:active .kg-cap{transition:none;transform:none}
 .kg-root[data-motion="reduce"] .kg-key[data-skeleton] .kg-cap::after{animation-duration:3s}
 @media (prefers-reduced-motion:reduce){
-.kg-root[data-motion="user"] .kg-key,.kg-root[data-motion="user"] .kg-key:hover{transition:none;transform:none}
+.kg-root[data-motion="user"] .kg-key,.kg-root[data-motion="user"] .kg-key:hover,.kg-root[data-motion="user"] .kg-key:active .kg-cap{transition:none;transform:none}
 .kg-root[data-motion="user"] .kg-key[data-skeleton] .kg-cap::after{animation-duration:3s}}
 `
   .replace(/\n/g, '')

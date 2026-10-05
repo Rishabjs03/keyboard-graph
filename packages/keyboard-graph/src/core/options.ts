@@ -156,7 +156,10 @@ export function themeStyleVars(theme: ThemeInput | undefined): Record<string, st
 }
 
 /** Variables that depend on the grid size. */
-export function frameStyleVars(columns: number, o: Pick<ResolvedOptions, 'gap' | 'keySize' | 'showDayLabels'>) {
+export function frameStyleVars(
+  columns: number,
+  o: Pick<ResolvedOptions, 'gap' | 'keySize' | 'showDayLabels'>,
+) {
   const keySize = clamp(o.keySize, 6, 64);
   const gapRatio = clamp(o.gap, 0, keySize) / keySize;
   return {
@@ -167,18 +170,30 @@ export function frameStyleVars(columns: number, o: Pick<ResolvedOptions, 'gap' |
 
 export type RootState = 'loading' | 'ready' | 'error' | 'empty';
 
-export function rootDataAttributes(o: ResolvedOptions, state: RootState, reducedMotion: boolean | null) {
+export function rootDataAttributes(
+  o: ResolvedOptions,
+  state: RootState,
+  reducedMotion: boolean | null,
+) {
   return {
     'data-scheme': o.colorScheme,
     'data-state': state,
     'data-responsive': o.responsive,
     'data-plate': String(o.plate),
-    'data-motion': o.reducedMotion === 'always' || reducedMotion ? 'reduce' : o.reducedMotion === 'never' ? 'full' : 'user',
+    'data-motion':
+      o.reducedMotion === 'always' || reducedMotion
+        ? 'reduce'
+        : o.reducedMotion === 'never'
+          ? 'full'
+          : 'user',
   } as const;
 }
 
 /** Year options for the built-in selector. */
-export function yearOptions(value: boolean | readonly YearSelection[], now = new Date()): YearSelection[] {
+export function yearOptions(
+  value: boolean | readonly YearSelection[],
+  now = new Date(),
+): YearSelection[] {
   if (Array.isArray(value)) return [...value];
   if (!value) return [];
   const current = now.getFullYear();

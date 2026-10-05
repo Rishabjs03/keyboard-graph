@@ -36,7 +36,10 @@ type AudioContextCtor = typeof AudioContext;
 
 function audioContextCtor(): AudioContextCtor | null {
   if (typeof window === 'undefined') return null;
-  const g = globalThis as { AudioContext?: AudioContextCtor; webkitAudioContext?: AudioContextCtor };
+  const g = globalThis as {
+    AudioContext?: AudioContextCtor;
+    webkitAudioContext?: AudioContextCtor;
+  };
   return g.AudioContext ?? g.webkitAudioContext ?? null;
 }
 
@@ -100,10 +103,13 @@ function decodeSample(url: string): Promise<AudioBuffer | null> {
       const OfflineCtor =
         typeof OfflineAudioContext === 'function'
           ? OfflineAudioContext
-          : (window as Window & { webkitOfflineAudioContext?: typeof OfflineAudioContext }).webkitOfflineAudioContext;
+          : (window as Window & { webkitOfflineAudioContext?: typeof OfflineAudioContext })
+              .webkitOfflineAudioContext;
       const decoder = OfflineCtor ? new OfflineCtor(1, 1, SAMPLE_RATE) : getContext();
       if (!decoder) return null;
-      return await new Promise<AudioBuffer>((resolve, reject) => decoder.decodeAudioData(data, resolve, reject));
+      return await new Promise<AudioBuffer>((resolve, reject) =>
+        decoder.decodeAudioData(data, resolve, reject),
+      );
     })().catch(() => {
       sampleCache.delete(url);
       return null;
@@ -168,7 +174,8 @@ export class SwitchAudio {
       Promise.all((sound.up ?? []).map(decodeSample)),
     ]);
     if (token !== this.loadToken) return;
-    const valid = (list: (AudioBuffer | null)[]) => list.filter((b): b is AudioBuffer => b !== null);
+    const valid = (list: (AudioBuffer | null)[]) =>
+      list.filter((b): b is AudioBuffer => b !== null);
     this.buffers = { down: valid(down), up: valid(up) };
   }
 

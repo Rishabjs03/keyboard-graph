@@ -14,7 +14,8 @@ import type { ContributionDay, GraphLayout, KeyCell, YearSelection } from './typ
  * renders the exact same structure and class names with JSX.
  */
 
-export const KEY_PARTS_HTML = '<span class="kg-shadow"></span><span class="kg-skirt"></span><span class="kg-cap"></span>';
+export const KEY_PARTS_HTML =
+  '<span class="kg-shadow"></span><span class="kg-skirt"></span><span class="kg-cap"></span>';
 
 /** Columns shown while loading (a full year). */
 export const SKELETON_COLUMNS = 53;
@@ -28,7 +29,10 @@ export function escapeHTML(value: string): string {
     .replaceAll("'", '&#39;');
 }
 
-export function ariaLabelFor(day: ContributionDay, o: Pick<ResolvedOptions, 'formatAriaLabel' | 'locale'>): string {
+export function ariaLabelFor(
+  day: ContributionDay,
+  o: Pick<ResolvedOptions, 'formatAriaLabel' | 'locale'>,
+): string {
   return o.formatAriaLabel ? o.formatAriaLabel(day) : formatAriaLabel(day, o.locale);
 }
 
@@ -43,7 +47,11 @@ export function tooltipParts(
   return { strong: lead, rest: full.slice(lead.length) };
 }
 
-export function totalLabel(total: number, year: YearSelection | null, o: Pick<ResolvedOptions, 'formatTotal' | 'locale'>) {
+export function totalLabel(
+  total: number,
+  year: YearSelection | null,
+  o: Pick<ResolvedOptions, 'formatTotal' | 'locale'>,
+) {
   return o.formatTotal ? o.formatTotal(total, year) : formatTotal(total, year, o.locale);
 }
 
@@ -52,7 +60,8 @@ export function gridLabel(username: string | undefined, year: YearSelection | nu
   return username ? `@${username}'s contributions${span}` : `Contributions${span}`;
 }
 
-export const KEYBOARD_HINT = 'Use the arrow keys to move between days. Press Enter or Space to press a key.';
+export const KEYBOARD_HINT =
+  'Use the arrow keys to move between days. Press Enter or Space to press a key.';
 
 function keyHTML(cell: KeyCell, tabbable: boolean, label: string): string {
   const future = cell.future ? ' data-future aria-disabled="true"' : '';
@@ -76,12 +85,14 @@ function labelsHTML(layout: GraphLayout, o: BoardOptions): string {
   let html = '';
   if (o.showMonthLabels) {
     html += '<div class="kg-months" aria-hidden="true">';
-    for (const m of layout.months) html += `<span class="kg-month" style="grid-column:${m.col + 1}">${escapeHTML(m.label)}</span>`;
+    for (const m of layout.months)
+      html += `<span class="kg-month" style="grid-column:${m.col + 1}">${escapeHTML(m.label)}</span>`;
     html += '</div>';
   }
   if (o.showDayLabels) {
     html += '<div class="kg-weekdays" aria-hidden="true">';
-    for (const d of layout.weekdays) html += `<span class="kg-weekday" style="grid-row:${d.row + 1}">${escapeHTML(d.label)}</span>`;
+    for (const d of layout.weekdays)
+      html += `<span class="kg-weekday" style="grid-row:${d.row + 1}">${escapeHTML(d.label)}</span>`;
     html += '</div>';
   }
   return html;
@@ -94,7 +105,8 @@ export function boardHTML(
 ): string {
   const focus = initialFocusIndex(layout);
   let keys = '';
-  for (const cell of layout.cells) keys += keyHTML(cell, cell.index === focus, ariaLabelFor(cell, o));
+  for (const cell of layout.cells)
+    keys += keyHTML(cell, cell.index === focus, ariaLabelFor(cell, o));
   return (
     boardOpen(o) +
     labelsHTML(layout, o) +
@@ -116,7 +128,8 @@ export function skeletonBoardHTML(o: ResolvedOptions, columns = SKELETON_COLUMNS
 
 export function legendHTML(): string {
   let caps = '';
-  for (let level = 0; level <= 4; level++) caps += `<span class="kg-key" data-level="${level}">${KEY_PARTS_HTML}</span>`;
+  for (let level = 0; level <= 4; level++)
+    caps += `<span class="kg-key" data-level="${level}">${KEY_PARTS_HTML}</span>`;
   return `<div class="kg-legend" aria-hidden="true"><span class="kg-legend-label">Less</span>${caps}<span class="kg-legend-label">More</span></div>`;
 }
 

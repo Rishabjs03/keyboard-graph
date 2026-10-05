@@ -7,7 +7,11 @@
  * Requires `react` and `motion` (peer dependencies).
  */
 export { KeyboardGraph, type KeyboardGraphProps } from './KeyboardGraph.js';
-export { useContributions, type UseContributionsOptions, type UseContributionsResult } from './useContributions.js';
+export {
+  useContributions,
+  type UseContributionsOptions,
+  type UseContributionsResult,
+} from './useContributions.js';
 export { createMotionAnimator } from './motionAnimator.js';
 export type { KeyboardGraphHandle } from '../core/handle.js';
 export type { KeyboardGraphOptions, ThemeTransitionOptions } from '../core/options.js';

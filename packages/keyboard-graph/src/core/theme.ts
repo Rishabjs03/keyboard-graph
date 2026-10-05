@@ -22,14 +22,7 @@ export interface ThemePalette {
 }
 
 export type ThemeName =
-  | 'github'
-  | 'halloween'
-  | 'ocean'
-  | 'sunset'
-  | 'mono'
-  | 'sakura'
-  | 'retro'
-  | 'night';
+  'github' | 'halloween' | 'ocean' | 'sunset' | 'mono' | 'sakura' | 'retro' | 'night';
 
 export interface ThemePreset {
   name: ThemeName;
@@ -82,38 +75,86 @@ export const themes: Record<ThemeName, ThemePreset> = {
   github: {
     name: 'github',
     label: 'GitHub Green',
-    light: palette(['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'], { plate: '#f6f8fa', text: '#59636e' }, false),
-    dark: palette(['#2a313c', '#0e4429', '#006d32', '#26a641', '#39d353'], { plate: '#0d1117', text: '#9198a1' }, true),
+    light: palette(
+      ['#ebedf0', '#9be9a8', '#40c463', '#30a14e', '#216e39'],
+      { plate: '#f6f8fa', text: '#59636e' },
+      false,
+    ),
+    dark: palette(
+      ['#2a313c', '#0e4429', '#006d32', '#26a641', '#39d353'],
+      { plate: '#0d1117', text: '#9198a1' },
+      true,
+    ),
   },
   halloween: {
     name: 'halloween',
     label: 'Halloween',
-    light: palette(['#ebedf0', '#ffee4a', '#ffc501', '#fe9600', '#03001c'], { plate: '#f7f4ee', text: '#5f5646' }, false),
-    dark: palette(['#2b2a33', '#631c03', '#bd561d', '#fa7a18', '#fddf68'], { plate: '#110f14', text: '#a39b8f', focus: '#fa7a18' }, true),
+    light: palette(
+      ['#ebedf0', '#ffee4a', '#ffc501', '#fe9600', '#03001c'],
+      { plate: '#f7f4ee', text: '#5f5646' },
+      false,
+    ),
+    dark: palette(
+      ['#2b2a33', '#631c03', '#bd561d', '#fa7a18', '#fddf68'],
+      { plate: '#110f14', text: '#a39b8f', focus: '#fa7a18' },
+      true,
+    ),
   },
   ocean: {
     name: 'ocean',
     label: 'Ocean',
-    light: palette(['#e7edf3', '#b7e1f3', '#5ab4e0', '#2a7fc1', '#12417a'], { plate: '#f3f7fa', text: '#4c6275' }, false),
-    dark: palette(['#1f2a38', '#0b3954', '#087e8b', '#2fb4c6', '#8ee3ef'], { plate: '#0a121c', text: '#8aa1b4', focus: '#2fb4c6' }, true),
+    light: palette(
+      ['#e7edf3', '#b7e1f3', '#5ab4e0', '#2a7fc1', '#12417a'],
+      { plate: '#f3f7fa', text: '#4c6275' },
+      false,
+    ),
+    dark: palette(
+      ['#1f2a38', '#0b3954', '#087e8b', '#2fb4c6', '#8ee3ef'],
+      { plate: '#0a121c', text: '#8aa1b4', focus: '#2fb4c6' },
+      true,
+    ),
   },
   sunset: {
     name: 'sunset',
     label: 'Sunset',
-    light: palette(['#f1ebe9', '#ffd3a5', '#fd9f6c', '#f2617a', '#8e3a8c'], { plate: '#fbf7f5', text: '#6f5a5a', focus: '#f2617a' }, false),
-    dark: palette(['#2d2529', '#5a2a4a', '#a63d63', '#ec6c5b', '#ffb36b'], { plate: '#151013', text: '#b09a9c', focus: '#ec6c5b' }, true),
+    light: palette(
+      ['#f1ebe9', '#ffd3a5', '#fd9f6c', '#f2617a', '#8e3a8c'],
+      { plate: '#fbf7f5', text: '#6f5a5a', focus: '#f2617a' },
+      false,
+    ),
+    dark: palette(
+      ['#2d2529', '#5a2a4a', '#a63d63', '#ec6c5b', '#ffb36b'],
+      { plate: '#151013', text: '#b09a9c', focus: '#ec6c5b' },
+      true,
+    ),
   },
   mono: {
     name: 'mono',
     label: 'Mono',
-    light: palette(['#ececec', '#c6c6c6', '#909090', '#575757', '#1f1f1f'], { plate: '#f7f7f7', text: '#666666', focus: '#111111' }, false),
-    dark: palette(['#2a2a2a', '#474747', '#727272', '#ababab', '#f0f0f0'], { plate: '#0f0f0f', text: '#9a9a9a', focus: '#f0f0f0' }, true),
+    light: palette(
+      ['#ececec', '#c6c6c6', '#909090', '#575757', '#1f1f1f'],
+      { plate: '#f7f7f7', text: '#666666', focus: '#111111' },
+      false,
+    ),
+    dark: palette(
+      ['#2a2a2a', '#474747', '#727272', '#ababab', '#f0f0f0'],
+      { plate: '#0f0f0f', text: '#9a9a9a', focus: '#f0f0f0' },
+      true,
+    ),
   },
   sakura: {
     name: 'sakura',
     label: 'Sakura',
-    light: palette(['#f4ecee', '#fbd3df', '#f5a3bd', '#e5739a', '#b8456f'], { plate: '#fdf8f9', text: '#7a5a66', focus: '#e5739a' }, false),
-    dark: palette(['#2e2529', '#5c3443', '#93506a', '#d2799a', '#f7b9cd'], { plate: '#161013', text: '#b39aa4', focus: '#f7b9cd' }, true),
+    light: palette(
+      ['#f4ecee', '#fbd3df', '#f5a3bd', '#e5739a', '#b8456f'],
+      { plate: '#fdf8f9', text: '#7a5a66', focus: '#e5739a' },
+      false,
+    ),
+    dark: palette(
+      ['#2e2529', '#5c3443', '#93506a', '#d2799a', '#f7b9cd'],
+      { plate: '#161013', text: '#b39aa4', focus: '#f7b9cd' },
+      true,
+    ),
   },
   retro: {
     name: 'retro',
@@ -134,7 +175,15 @@ export const themes: Record<ThemeName, ThemePreset> = {
     label: 'Night',
     light: palette(
       ['#262a3d', '#2d3f76', '#3e63dd', '#7c5cff', '#c4b5fd'],
-      { plate: '#14151f', text: '#8b90b0', side: '#000000', shadow: 'rgba(0,0,0,0.6)', focus: '#a78bfa', highlight: 0.16, tooltip: darkTooltip },
+      {
+        plate: '#14151f',
+        text: '#8b90b0',
+        side: '#000000',
+        shadow: 'rgba(0,0,0,0.6)',
+        focus: '#a78bfa',
+        highlight: 0.16,
+        tooltip: darkTooltip,
+      },
       false,
     ),
     dark: palette(
@@ -153,7 +202,9 @@ export function isThemeName(value: unknown): value is ThemeName {
 
 function mergePalette(base: ThemePalette, patch: PartialPalette | undefined): ThemePalette {
   if (!patch) return base;
-  const levels = base.levels.map((c, i) => patch.levels?.[i] ?? c) as unknown as ThemePalette['levels'];
+  const levels = base.levels.map(
+    (c, i) => patch.levels?.[i] ?? c,
+  ) as unknown as ThemePalette['levels'];
   return {
     ...base,
     ...Object.fromEntries(Object.entries(patch).filter(([, v]) => v !== undefined)),

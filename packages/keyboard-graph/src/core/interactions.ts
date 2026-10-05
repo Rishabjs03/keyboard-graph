@@ -35,14 +35,25 @@ export interface InteractionOptions extends InteractionSettings {
 export interface InteractionController {
   /** Call after keys were re-rendered or morphed to a new layout. */
   setLayout(layout: GraphLayout): void;
-  update(settings: Partial<InteractionSettings> & { audio?: SwitchAudio | null; animator?: KeyAnimator }): void;
+  update(
+    settings: Partial<InteractionSettings> & { audio?: SwitchAudio | null; animator?: KeyAnimator },
+  ): void;
   press(index: number, options?: ProgrammaticPress): void;
   focus(index: number): void;
   keyElements(): readonly HTMLElement[];
   destroy(): void;
 }
 
-const NAV_KEYS = new Set<string>(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End', 'PageUp', 'PageDown']);
+const NAV_KEYS = new Set<string>([
+  'ArrowLeft',
+  'ArrowRight',
+  'ArrowUp',
+  'ArrowDown',
+  'Home',
+  'End',
+  'PageUp',
+  'PageDown',
+]);
 const TOOLTIP_LINGER_MS = 2600;
 const RIPPLE_RADIUS = 2.3;
 const SOFT_DEPTH = 0.55;
@@ -145,7 +156,8 @@ export function createInteractions(options: InteractionOptions): InteractionCont
         const index = cellAt(layout, cell.col + dc, cell.row + dr);
         if (!usable(index)) continue;
         const p = partsOf(index);
-        if (p) animator.nudge(p, depth * 0.32 * (1 - distance / (RIPPLE_RADIUS + 1)), distance * 30);
+        if (p)
+          animator.nudge(p, depth * 0.32 * (1 - distance / (RIPPLE_RADIUS + 1)), distance * 30);
       }
     }
   };
@@ -168,7 +180,14 @@ export function createInteractions(options: InteractionOptions): InteractionCont
     if (settings.ripple) ripple(cell, p.key, o.depth);
     if (o.tooltip) showTooltip(index);
     if (o.notify) {
-      options.onPress?.({ date: cell.date, count: cell.count, level: cell.level, col: cell.col, row: cell.row, source: o.source });
+      options.onPress?.({
+        date: cell.date,
+        count: cell.count,
+        level: cell.level,
+        col: cell.col,
+        row: cell.row,
+        source: o.source,
+      });
     }
     return true;
   };
@@ -193,7 +212,17 @@ export function createInteractions(options: InteractionOptions): InteractionCont
     const index = keyIndexFrom(event.target);
     if (index < 0 || pointers.has(event.pointerId)) return;
     audio?.unlock();
-    if (!down(index, { source: 'pointer', depth: 1, sound: true, tooltip: true, notify: true, velocity: 1 })) return;
+    if (
+      !down(index, {
+        source: 'pointer',
+        depth: 1,
+        sound: true,
+        tooltip: true,
+        notify: true,
+        velocity: 1,
+      })
+    )
+      return;
     pointers.set(event.pointerId, index);
     setActive(index);
     if (pointers.size === 1) {
@@ -228,7 +257,12 @@ export function createInteractions(options: InteractionOptions): InteractionCont
 
     if (NAV_KEYS.has(event.key)) {
       event.preventDefault();
-      const next = navigate(layout, index, event.key as NavigationKey, event.ctrlKey || event.metaKey);
+      const next = navigate(
+        layout,
+        index,
+        event.key as NavigationKey,
+        event.ctrlKey || event.metaKey,
+      );
       if (next !== index) {
         if (keyboardHeld >= 0) {
           up(keyboardHeld, 1, false);
@@ -244,7 +278,16 @@ export function createInteractions(options: InteractionOptions): InteractionCont
       lastKeyboardActivation = Date.now();
       if (event.repeat || keyboardHeld >= 0) return;
       audio?.unlock();
-      if (down(index, { source: 'keyboard', depth: 1, sound: true, tooltip: true, notify: true, velocity: 1 })) {
+      if (
+        down(index, {
+          source: 'keyboard',
+          depth: 1,
+          sound: true,
+          tooltip: true,
+          notify: true,
+          velocity: 1,
+        })
+      ) {
         keyboardHeld = index;
       }
       return;
@@ -294,7 +337,8 @@ export function createInteractions(options: InteractionOptions): InteractionCont
 
   const onContextMenu = (event: Event) => {
     // Long-press on touch would open the callout menu over the keys.
-    if (keyIndexFrom(event.target) >= 0 && (event as PointerEvent).pointerType !== 'mouse') event.preventDefault();
+    if (keyIndexFrom(event.target) >= 0 && (event as PointerEvent).pointerType !== 'mouse')
+      event.preventDefault();
   };
 
   grid.addEventListener('pointerdown', onPointerDown);
@@ -327,6 +371,8 @@ export function createInteractions(options: InteractionOptions): InteractionCont
       const depth = soft ? SOFT_DEPTH : 1;
       const velocity = soft ? 0.35 : 1;
       const sound = o.sound ?? true;
+      // Inside a user gesture (e.g. a global keydown) this enables audio; elsewhere it is a no-op.
+      if (sound) audio?.unlock();
       const pressed = down(index, {
         source: 'program',
         depth,
@@ -403,7 +449,10 @@ export function sweepDelays(
 }
 
 /** Write sweep delays onto key elements (`--kg-delay`, read by the colour transition). */
-export function applyDelays(keys: readonly (HTMLElement | undefined)[], delays: readonly number[]): void {
+export function applyDelays(
+  keys: readonly (HTMLElement | undefined)[],
+  delays: readonly number[],
+): void {
   for (let i = 0; i < keys.length; i++) {
     keys[i]?.style.setProperty('--kg-delay', `${delays[i] ?? 0}ms`);
   }

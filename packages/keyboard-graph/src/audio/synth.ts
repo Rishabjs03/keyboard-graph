@@ -50,11 +50,40 @@ export interface StrokeRecipe {
   peak: number;
 }
 
-const noise = (at: number, filter: FilterType, freq: number, q: number, decay: number, gain: number, attack = 0.0005): NoiseLayer => ({
-  kind: 'noise', at, filter, freq, q, attack, decay, gain,
+const noise = (
+  at: number,
+  filter: FilterType,
+  freq: number,
+  q: number,
+  decay: number,
+  gain: number,
+  attack = 0.0005,
+): NoiseLayer => ({
+  kind: 'noise',
+  at,
+  filter,
+  freq,
+  q,
+  attack,
+  decay,
+  gain,
 });
-const tone = (at: number, freq: number, decay: number, gain: number, drop = 0, dropTime = 0.012): ToneLayer => ({
-  kind: 'tone', at, freq, decay, gain, drop, dropTime, attack: 0.0004,
+const tone = (
+  at: number,
+  freq: number,
+  decay: number,
+  gain: number,
+  drop = 0,
+  dropTime = 0.012,
+): ToneLayer => ({
+  kind: 'tone',
+  at,
+  freq,
+  decay,
+  gain,
+  drop,
+  dropTime,
+  attack: 0.0004,
 });
 
 export const switchRecipes: Record<SwitchProfile, Record<StrokePhase, StrokeRecipe>> = {
@@ -182,7 +211,10 @@ function biquad(type: FilterType, freq: number, q: number, sampleRate: number): 
 }
 
 function filterInPlace(buf: Float32Array, c: Biquad): void {
-  let x1 = 0, x2 = 0, y1 = 0, y2 = 0;
+  let x1 = 0,
+    x2 = 0,
+    y1 = 0,
+    y2 = 0;
   for (let i = 0; i < buf.length; i++) {
     const x0 = buf[i]!;
     const y0 = c.b0 * x0 + c.b1 * x1 + c.b2 * x2 - c.a1 * y1 - c.a2 * y2;
@@ -281,5 +313,7 @@ export function renderVariants(
 ): Float32Array[] {
   const base = switchRecipes[profile][phase];
   const rng = createRng(profile.length * 7919 + (phase === 'down' ? 1 : 2));
-  return Array.from({ length: count }, (_, i) => renderStroke(i === 0 ? base : vary(base, rng, 1), sampleRate));
+  return Array.from({ length: count }, (_, i) =>
+    renderStroke(i === 0 ? base : vary(base, rng, 1), sampleRate),
+  );
 }

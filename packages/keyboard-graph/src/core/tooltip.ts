@@ -39,7 +39,10 @@ export function computeTooltipPosition(
   const placement: TooltipPosition['placement'] =
     spaceAbove >= needed || spaceAbove >= spaceBelow ? 'top' : 'bottom';
 
-  let y = placement === 'top' ? anchor.top - offset - tooltip.height : anchor.top + anchor.height + offset;
+  let y =
+    placement === 'top'
+      ? anchor.top - offset - tooltip.height
+      : anchor.top + anchor.height + offset;
   y = Math.max(margin, Math.min(y, viewport.height - margin - tooltip.height));
 
   const maxX = Math.max(margin, viewport.width - margin - tooltip.width);

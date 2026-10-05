@@ -17,10 +17,18 @@ describe('computeTooltipPosition', () => {
   });
 
   it('clamps horizontally and keeps the arrow on the key', () => {
-    const left = computeTooltipPosition({ left: 0, top: 150, width: 20, height: 20 }, tip, viewport);
+    const left = computeTooltipPosition(
+      { left: 0, top: 150, width: 20, height: 20 },
+      tip,
+      viewport,
+    );
     expect(left.x).toBe(8);
     expect(left.arrowX).toBe(12);
-    const right = computeTooltipPosition({ left: 385, top: 150, width: 10, height: 20 }, tip, viewport);
+    const right = computeTooltipPosition(
+      { left: 385, top: 150, width: 10, height: 20 },
+      tip,
+      viewport,
+    );
     expect(right.x).toBe(192);
     expect(right.arrowX).toBe(188);
   });

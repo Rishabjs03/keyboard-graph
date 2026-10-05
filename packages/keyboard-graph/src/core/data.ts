@@ -19,7 +19,8 @@ export const DEFAULT_ENDPOINT =
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const USERNAME = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i;
 
-export type KeyboardGraphErrorCode = 'not-found' | 'rate-limited' | 'network' | 'invalid' | 'aborted';
+export type KeyboardGraphErrorCode =
+  'not-found' | 'rate-limited' | 'network' | 'invalid' | 'aborted';
 
 export class KeyboardGraphError extends Error {
   readonly code: KeyboardGraphErrorCode;
@@ -95,7 +96,10 @@ export function normalizeContributions(
     const count = Number(day.count) || 0;
     const existing = byDate.get(date);
     // Duplicate dates (e.g. merged sources) are summed rather than dropped.
-    byDate.set(date, existing ? { ...existing, count: existing.count + count } : { ...day, date, count });
+    byDate.set(
+      date,
+      existing ? { ...existing, count: existing.count + count } : { ...day, date, count },
+    );
   }
 
   let dates = [...byDate.keys()].sort();
@@ -126,7 +130,9 @@ export function normalizeContributions(
 
   // Trust upstream levels when every day carries one, otherwise derive them.
   const hasLevels = raw.every((d) => d.level !== undefined && d.level !== null);
-  const levels = hasLevels ? raw.map((d) => clampLevel(d.level!)) : computeLevels(raw.map((d) => d.count));
+  const levels = hasLevels
+    ? raw.map((d) => clampLevel(d.level!))
+    : computeLevels(raw.map((d) => d.count));
 
   return raw.map((d, i) => ({ date: d.date, count: Math.max(0, d.count), level: levels[i]! }));
 }
@@ -134,10 +140,17 @@ export function normalizeContributions(
 /** Accept either a bare array or an API-shaped `{ contributions }` object. */
 export function parseContributionsPayload(payload: unknown): ContributionInput[] {
   if (Array.isArray(payload)) return payload as ContributionInput[];
-  if (payload && typeof payload === 'object' && Array.isArray((payload as ContributionsApiResponse).contributions)) {
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    Array.isArray((payload as ContributionsApiResponse).contributions)
+  ) {
     return (payload as ContributionsApiResponse).contributions;
   }
-  throw new KeyboardGraphError('invalid', 'Unexpected contributions payload: expected an array or { contributions: [] }.');
+  throw new KeyboardGraphError(
+    'invalid',
+    'Unexpected contributions payload: expected an array or { contributions: [] }.',
+  );
 }
 
 export interface LoadContributionsOptions {
@@ -157,21 +170,44 @@ export interface LoadedContributions {
 // back and forth (or rendering several graphs for one user) never refetches.
 const responseCache = new Map<string, Promise<ContributionInput[]>>();
 
+/** Give up on a stalled request so the UI can offer a retry instead of loading forever. */
+const REQUEST_TIMEOUT_MS = 15_000;
+
 async function fetchFromEndpoint(url: string): Promise<ContributionInput[]> {
   let response: Response;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
   try {
-    response = await fetch(url, { headers: { Accept: 'application/json' } });
+    response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: controller.signal,
+    });
   } catch (error) {
-    throw new KeyboardGraphError('network', `Network error while loading contributions: ${String(error)}`);
+    throw new KeyboardGraphError(
+      'network',
+      controller.signal.aborted
+        ? 'The contributions API took too long to respond.'
+        : `Network error while loading contributions: ${String(error)}`,
+    );
+  } finally {
+    clearTimeout(timer);
   }
   if (response.status === 404) {
     throw new KeyboardGraphError('not-found', 'GitHub user not found.', 404);
   }
   if (response.status === 403 || response.status === 429) {
-    throw new KeyboardGraphError('rate-limited', 'The contributions API is rate limiting requests. Try again shortly.', response.status);
+    throw new KeyboardGraphError(
+      'rate-limited',
+      'The contributions API is rate limiting requests. Try again shortly.',
+      response.status,
+    );
   }
   if (!response.ok) {
-    throw new KeyboardGraphError('network', `Contributions API responded with ${response.status}.`, response.status);
+    throw new KeyboardGraphError(
+      'network',
+      `Contributions API responded with ${response.status}.`,
+      response.status,
+    );
   }
   return parseContributionsPayload(await response.json());
 }
@@ -196,14 +232,18 @@ function abortable<T>(promise: Promise<T>, signal: AbortSignal | undefined): Pro
 }
 
 /** Fetch and normalise contributions for a user. Used by both wrappers. */
-export async function loadContributions(options: LoadContributionsOptions): Promise<LoadedContributions> {
+export async function loadContributions(
+  options: LoadContributionsOptions,
+): Promise<LoadedContributions> {
   const { username, year, fetcher, signal } = options;
   let raw: ContributionInput[];
 
   if (fetcher) {
     const controller = new AbortController();
     signal?.addEventListener('abort', () => controller.abort(), { once: true });
-    raw = parseContributionsPayload(await abortable(fetcher({ username, year, signal: controller.signal }), signal));
+    raw = parseContributionsPayload(
+      await abortable(fetcher({ username, year, signal: controller.signal }), signal),
+    );
   } else {
     if (!isValidUsername(username)) {
       throw new KeyboardGraphError('not-found', `"${username}" is not a valid GitHub username.`);
