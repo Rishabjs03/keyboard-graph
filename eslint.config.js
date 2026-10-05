@@ -31,7 +31,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['**/*.tsx', 'packages/keyboard-graph/src/react/**/*.ts', 'apps/demo/**/*.ts'],
+    files: ['**/*.tsx', 'packages/clacky/src/react/**/*.ts', 'apps/demo/**/*.ts'],
     plugins: { 'react-hooks': reactHooks },
     rules: {
       'react-hooks/rules-of-hooks': 'error',

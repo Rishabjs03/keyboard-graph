@@ -1,4 +1,4 @@
-# keyboard-graph proxy · Netlify
+# clacky proxy · Netlify
 
 The same GraphQL proxy as a [Netlify Function](https://docs.netlify.com/functions/overview/).
 
@@ -10,10 +10,10 @@ netlify deploy --prod
 ```
 
 ```html
-<keyboard-graph
+<clacky-graph
   username="octocat"
   endpoint="https://<your-site>.netlify.app/api/contributions/{username}?y={year}"
-></keyboard-graph>
+></clacky-graph>
 ```
 
 See the [Vercel example](../proxy-vercel/README.md#token) for which token to create.

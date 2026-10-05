@@ -32,12 +32,12 @@ importers:
 
   apps/demo:
     dependencies:
+      clacky:
+        specifier: workspace:*
+        version: link:../../packages/clacky
       geist:
         specifier: ^1.7.2
         version: 1.7.2(next@16.3.8(@babel/core@7.29.7)(@types/node@22.20.5)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
-      keyboard-graph:
-        specifier: workspace:*
-        version: link:../../packages/keyboard-graph
       motion:
         specifier: ^14.0.0
         version: 14.0.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -73,7 +73,7 @@ importers:
         specifier: ~6.0.3
         version: 6.0.3
 
-  packages/keyboard-graph:
+  packages/clacky:
     devDependencies:
       '@types/node':
         specifier: ^22.20.5

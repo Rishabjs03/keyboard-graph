@@ -1,4 +1,4 @@
-# keyboard-graph proxy · Vercel
+# clacky proxy · Vercel
 
 A tiny Vercel Function that fetches contribution data from **GitHub's GraphQL API** with your own token.
 
@@ -12,7 +12,7 @@ vercel deploy
 Then point the component at it:
 
 ```tsx
-<KeyboardGraph
+<Clacky
   username="octocat"
   endpoint="https://<your-app>.vercel.app/api/contributions?username={username}&y={year}"
 />

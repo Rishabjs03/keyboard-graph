@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, type RefObject } from 'react';
-import type { KeyboardGraphHandle } from 'keyboard-graph/react';
+import type { ClackyHandle } from 'clacky/react';
 
 /** Physical QWERTY rows, their stagger, and the graph row each one plays on. */
 const ROWS = ['1234567890', 'qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
@@ -29,7 +29,7 @@ function isTypingTarget(target: EventTarget | null) {
  * Easter egg: typing on your physical keyboard presses the matching region of the
  * graph, laid out like a QWERTY board. Returns the recently typed text.
  */
-export function useTypeToPlay(graph: RefObject<KeyboardGraphHandle | null>, enabled = true) {
+export function useTypeToPlay(graph: RefObject<ClackyHandle | null>, enabled = true) {
   const [typed, setTyped] = useState('');
   const clearTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 

@@ -1,5 +1,5 @@
 {
-  "name": "keyboard-graph-monorepo",
+  "name": "clacky-monorepo",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.28.0",
@@ -7,12 +7,12 @@
     "node": ">=20.9"
   },
   "scripts": {
-    "dev": "pnpm --filter keyboard-graph build && pnpm --parallel --filter keyboard-graph --filter demo dev",
-    "build": "pnpm --filter keyboard-graph build && pnpm --filter demo build",
-    "build:lib": "pnpm --filter keyboard-graph build",
+    "dev": "pnpm --filter clacky build && pnpm --parallel --filter clacky --filter demo dev",
+    "build": "pnpm --filter clacky build && pnpm --filter demo build",
+    "build:lib": "pnpm --filter clacky build",
     "lint": "eslint .",
     "typecheck": "pnpm -r typecheck",
-    "test": "pnpm --filter keyboard-graph test",
+    "test": "pnpm --filter clacky test",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

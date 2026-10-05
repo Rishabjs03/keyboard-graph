@@ -45,12 +45,12 @@ export function UsernameForm({ value, onChange, onSubmit, status, error }: Props
         onSubmit={handleSubmit}
         animate={{
           boxShadow: focused
-            ? '0 0 0 4px rgba(10,10,10,0.06), 0 1px 2px rgba(0,0,0,0.06), 0 10px 30px -12px rgba(0,0,0,0.25)'
-            : '0 0 0 0px rgba(10,10,10,0), 0 1px 2px rgba(0,0,0,0.05), 0 6px 20px -12px rgba(0,0,0,0.18)',
+            ? '0 0 0 4px rgba(22,18,13,0.06), 0 1px 2px rgba(60,42,18,0.06), 0 10px 30px -12px rgba(60,42,18,0.25)'
+            : '0 0 0 0px rgba(22,18,13,0), 0 1px 2px rgba(60,42,18,0.05), 0 6px 20px -12px rgba(60,42,18,0.18)',
         }}
         transition={{ duration: 0.25 }}
-        className={`flex h-12 w-full max-w-[400px] items-center rounded-full border bg-white pl-5 pr-1.5 transition-colors ${
-          status === 'error' ? 'border-red-300' : focused ? 'border-neutral-300' : 'border-line'
+        className={`flex h-12 w-full max-w-[400px] items-center rounded-full border bg-paper pl-5 pr-1.5 transition-colors ${
+          status === 'error' ? 'border-red-300' : focused ? 'border-line-strong' : 'border-line'
         }`}
       >
         <label htmlFor="username" className="select-none whitespace-nowrap text-[15px] text-faint">
@@ -76,8 +76,8 @@ export function UsernameForm({ value, onChange, onSubmit, status, error }: Props
           disabled={status === 'loading'}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.92, y: 1 }}
-          animate={{ backgroundColor: status === 'success' ? '#16a34a' : '#0a0a0a' }}
-          className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(0,0,0,0.25)] disabled:cursor-wait"
+          animate={{ backgroundColor: status === 'success' ? '#16a34a' : '#16120d' }}
+          className="relative grid h-9 w-9 shrink-0 place-items-center rounded-full text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.18),0_2px_0_rgba(60,42,18,0.25)] disabled:cursor-wait"
         >
           <AnimatePresence mode="popLayout" initial={false}>
             {status === 'loading' ? (

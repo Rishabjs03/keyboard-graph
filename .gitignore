@@ -15,5 +15,5 @@ next-env.d.ts
 .screenshots
 
 # Copied from the repo root at pack time
-packages/keyboard-graph/README.md
-packages/keyboard-graph/LICENSE
+packages/clacky/README.md
+packages/clacky/LICENSE

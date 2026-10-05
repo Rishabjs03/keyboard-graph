@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>keyboard-graph · plain HTML</title>
-    <!-- One script tag: registers <keyboard-graph>. No React, no build step. -->
-    <script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+    <title>clacky · plain HTML</title>
+    <!-- One script tag: registers <clacky-graph>. No React, no build step. -->
+    <script src="https://unpkg.com/clacky/dist/clacky.iife.js"></script>
     <style>
       body {
         margin: 0;
@@ -15,17 +15,17 @@
         gap: 48px;
         justify-items: center;
       }
-      keyboard-graph {
+      clacky-graph {
         width: min(1100px, 100%);
       }
       /* Theme with plain CSS: these override the preset in both colour schemes. */
       .brand {
-        --kg-level-1: #c7d2fe;
-        --kg-level-2: #818cf8;
-        --kg-level-3: #4f46e5;
-        --kg-level-4: #312e81;
-        --kg-plate: #f5f7ff;
-        --kg-font: 'Inter', system-ui, sans-serif;
+        --clacky-level-1: #c7d2fe;
+        --clacky-level-2: #818cf8;
+        --clacky-level-3: #4f46e5;
+        --clacky-level-4: #312e81;
+        --clacky-plate: #f5f7ff;
+        --clacky-font: 'Inter', system-ui, sans-serif;
       }
       #last {
         font-size: 14px;
@@ -36,24 +36,24 @@
   </head>
   <body>
     <!-- 1. Fetch by username (public API), preset theme, clicky switches -->
-    <keyboard-graph username="torvalds" theme="ocean" sound="blue" year-selector></keyboard-graph>
+    <clacky-graph username="torvalds" theme="ocean" sound="blue" year-selector></clacky-graph>
 
     <!-- 2. Brand colours via CSS custom properties, dark retro switches -->
-    <keyboard-graph
+    <clacky-graph
       class="brand"
       username="gaearon"
       sound="cream"
       show-day-labels="false"
-    ></keyboard-graph>
+    ></clacky-graph>
 
     <!-- 3. Static data, set as a property (no network) -->
-    <keyboard-graph id="static" theme="retro" ghost-typing></keyboard-graph>
+    <clacky-graph id="static" theme="retro" ghost-typing></clacky-graph>
     <p id="last">Press a key on the last graph…</p>
 
     <script>
       const graph = document.getElementById('static');
-      graph.data = KeyboardGraph.sampleContributions(new Date().toISOString().slice(0, 10));
-      graph.addEventListener('kg-keypress', (event) => {
+      graph.data = Clacky.sampleContributions(new Date().toISOString().slice(0, 10));
+      graph.addEventListener('clacky-keypress', (event) => {
         const { date, count } = event.detail;
         document.getElementById('last').textContent = `${date}: ${count} contributions`;
       });

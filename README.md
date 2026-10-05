@@ -4,18 +4,18 @@
   Demo recording. To refresh it, record the demo site (apps/demo) and replace
   .github/assets/demo.gif (~880px wide, under 4 MB) and demo.mp4.
 -->
-<a href="https://github.com/Rishabjs03/3d-git#readme">
-  <img src="./.github/assets/demo.gif" alt="keyboard-graph: a GitHub contribution graph rendered as mechanical keycaps that press down with a sound" width="880" />
+<a href="https://github.com/Rishabjs03/keyboard-graph#readme">
+  <img src="./.github/assets/demo.gif" alt="clacky: a GitHub contribution graph rendered as mechanical keycaps that press down with a sound" width="880" />
 </a>
 
-<h1>⌨️ keyboard-graph</h1>
+<h1>⌨️ clacky</h1>
 
 <p><b>Your GitHub contribution graph as a grid of clickable mechanical keycaps.</b><br/>
 Every day is a key. Press one: it travels down, springs back, clicks like a real switch, and tells you what you shipped.</p>
 
 <p>
-  <a href="https://www.npmjs.com/package/keyboard-graph"><img alt="npm" src="https://img.shields.io/npm/v/keyboard-graph?color=0a0a0a&label=npm"></a>
-  <a href="https://bundlephobia.com/package/keyboard-graph"><img alt="bundle size" src="https://img.shields.io/badge/web%20component-19%20kB%20gzip-0a0a0a"></a>
+  <a href="https://www.npmjs.com/package/clacky"><img alt="npm" src="https://img.shields.io/npm/v/clacky?color=0a0a0a&label=npm"></a>
+  <a href="https://bundlephobia.com/package/clacky"><img alt="bundle size" src="https://img.shields.io/badge/web%20component-19%20kB%20gzip-0a0a0a"></a>
   <a href="./LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0a0a0a"></a>
   <img alt="TypeScript" src="https://img.shields.io/badge/types-included-0a0a0a">
   <img alt="SSR safe" src="https://img.shields.io/badge/SSR-safe-0a0a0a">
@@ -44,7 +44,7 @@ Every day is a key. Press one: it travels down, springs back, clicks like a real
 | 🎨 **8 themes + your own**    | Presets with light and dark palettes, a `theme` object, or plain CSS custom properties. Theme changes ripple across the keys as a wave.          |
 | ♿ **Accessible**             | Arrow-key navigation, Enter/Space presses, screen-reader labels, a visible focus ring, and `prefers-reduced-motion` support.                     |
 | ⚡ **Fast**                   | About 370 keys, **7 delegated listeners**, and presses that animate only `transform`/`opacity` on the compositor. Presses never re-render React. |
-| 🧩 **Works everywhere**       | A React component **and** a framework-free `<keyboard-graph>` custom element (Astro, Vue, Svelte, plain HTML). SSR-safe. ESM + CJS + types.      |
+| 🧩 **Works everywhere**       | A React component **and** a framework-free `<clacky-graph>` custom element (Astro, Vue, Svelte, plain HTML). SSR-safe. ESM + CJS + types.        |
 | 🔌 **Bring your own data**    | By username (no token needed), your own endpoint or fetcher, or a static `data` array. Includes a self-hosted GitHub GraphQL proxy helper.       |
 
 <p align="center">
@@ -58,34 +58,34 @@ Every day is a key. Press one: it travels down, springs back, clicks like a real
 ## 📦 Install
 
 ```bash
-npm install keyboard-graph motion     # React (Motion powers the React animations)
-npm install keyboard-graph            # Web Component only: no other dependencies
+npm install clacky motion     # React (Motion powers the React animations)
+npm install clacky            # Web Component only: no other dependencies
 ```
 
 <details>
 <summary>pnpm / yarn / bun / CDN</summary>
 
 ```bash
-pnpm add keyboard-graph motion
-yarn add keyboard-graph motion
-bun add keyboard-graph motion
+pnpm add clacky motion
+yarn add clacky motion
+bun add clacky motion
 ```
 
 ```html
-<!-- No build step: one script tag registers <keyboard-graph> -->
-<script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+<!-- No build step: one script tag registers <clacky-graph> -->
+<script src="https://unpkg.com/clacky/dist/clacky.iife.js"></script>
 ```
 
 </details>
 
 **Entry points**
 
-| Import                   | What you get                                                                    | Size (min + gzip)         |
-| ------------------------ | ------------------------------------------------------------------------------- | ------------------------- |
-| `keyboard-graph/react`   | `<KeyboardGraph />`, `useContributions()`                                       | ~18 kB + `motion` (peer)  |
-| `keyboard-graph/element` | Registers `<keyboard-graph>` on import                                          | ~19 kB, zero dependencies |
-| `keyboard-graph`         | Framework-agnostic core: data, layout, themes, styles, audio, interactions      | tree-shakeable            |
-| `keyboard-graph/server`  | `fetchGitHubContributions()`, `createContributionsHandler()` for your own proxy | ~1.6 kB                   |
+| Import           | What you get                                                                    | Size (min + gzip)         |
+| ---------------- | ------------------------------------------------------------------------------- | ------------------------- |
+| `clacky/react`   | `<Clacky />`, `useContributions()`                                              | ~18 kB + `motion` (peer)  |
+| `clacky/element` | Registers `<clacky-graph>` on import                                            | ~19 kB, zero dependencies |
+| `clacky`         | Framework-agnostic core: data, layout, themes, styles, audio, interactions      | tree-shakeable            |
+| `clacky/server`  | `fetchGitHubContributions()`, `createContributionsHandler()` for your own proxy | ~1.6 kB                   |
 
 Sizes include the stylesheet and the sound synthesiser.
 
@@ -96,11 +96,11 @@ Sizes include the stylesheet and the sound synthesiser.
 ### React
 
 ```tsx
-import { KeyboardGraph } from 'keyboard-graph/react';
+import { Clacky } from 'clacky/react';
 
 export function Contributions() {
   return (
-    <KeyboardGraph
+    <Clacky
       username="Rishabjs03"
       theme="ocean"
       sound="blue"
@@ -115,48 +115,48 @@ export function Contributions() {
 ### Plain HTML (Web Component)
 
 ```html
-<script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+<script src="https://unpkg.com/clacky/dist/clacky.iife.js"></script>
 
-<keyboard-graph username="Rishabjs03" theme="ocean" sound="blue" year-selector></keyboard-graph>
+<clacky-graph username="Rishabjs03" theme="ocean" sound="blue" year-selector></clacky-graph>
 
 <script>
   document
-    .querySelector('keyboard-graph')
-    .addEventListener('kg-keypress', (event) => console.log(event.detail));
+    .querySelector('clacky-graph')
+    .addEventListener('clacky-keypress', (event) => console.log(event.detail));
 </script>
 ```
 
 ### Astro, Vue, Svelte, or anything with a bundler
 
 ```js
-import 'keyboard-graph/element'; // registers <keyboard-graph> (safe to import on the server)
+import 'clacky/element'; // registers <clacky-graph> (safe to import on the server)
 ```
 
 ```astro
 ---
 // Astro
 ---
-<keyboard-graph username="Rishabjs03" theme="sakura"></keyboard-graph>
-<script>import 'keyboard-graph/element';</script>
+<clacky-graph username="Rishabjs03" theme="sakura"></clacky-graph>
+<script>import 'clacky/element';</script>
 ```
 
 ```vue
 <!-- Vue: tell the compiler it's a custom element -->
-<!-- vite.config: vue({ template: { compilerOptions: { isCustomElement: (t) => t === 'keyboard-graph' } } }) -->
+<!-- vite.config: vue({ template: { compilerOptions: { isCustomElement: (t) => t === 'clacky-graph' } } }) -->
 <template>
-  <keyboard-graph username="Rishabjs03" theme="night" color-scheme="dark" />
+  <clacky-graph username="Rishabjs03" theme="night" color-scheme="dark" />
 </template>
 <script setup>
-import 'keyboard-graph/element';
+import 'clacky/element';
 </script>
 ```
 
 ```svelte
 <script>
-  import 'keyboard-graph/element';
+  import 'clacky/element';
 </script>
 
-<keyboard-graph username="Rishabjs03" theme="retro" on:kg-keypress={(e) => console.log(e.detail)} />
+<clacky-graph username="Rishabjs03" theme="retro" on:clacky-keypress={(e) => console.log(e.detail)} />
 ```
 
 ---
@@ -169,7 +169,7 @@ animation engine differs.
 
 ```mermaid
 flowchart LR
-  subgraph Core["keyboard-graph (core)"]
+  subgraph Core["clacky (core)"]
     D["data.ts<br/>fetch · cache · normalise"] --> L["layout.ts<br/>53 × 7 week grid"]
     T["theme.ts<br/>presets → CSS variables"]
     S["styles.ts<br/>keycap CSS"]
@@ -184,7 +184,7 @@ flowchart LR
   I --> R & W
 ```
 
-1. **Data**: contributions are fetched (or taken from `data`), sorted, gap-filled, and bucketed into levels 0–4 (GitHub's quartile method when levels are missing).
+1. **Data**: contributions are fetched (or taken from `data`), sorted, gap-filled, and bucketed into levels 0 to 4 (GitHub's quartile method when levels are missing).
 2. **Layout**: each day gets a `col` (week) and `row` (weekday), exactly like GitHub's calendar, with month and weekday labels.
 3. **Render**: each key is a `<button>` with three spans: a shadow, a skirt (the side wall) and a cap (the top, with a concave dish drawn with gradients). Colours come from CSS variables, so themes are just variable swaps.
 4. **Size**: key size is solved in CSS with container query units (`100cqi / columns`). The graph shrinks to fit its container, then scrolls with snap on very small screens. There's no JS measuring.
@@ -202,10 +202,10 @@ Every option works as a React prop **and** as a Web Component attribute (kebab-c
 
 | Prop (React)   | Attribute       | Type                                         | Default    | Description                                                                                       |
 | -------------- | --------------- | -------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
-| `username`     | `username`      | `string`                                     | —          | GitHub username to fetch.                                                                         |
+| `username`     | `username`      | `string`                                     | none       | GitHub username to fetch.                                                                         |
 | `year`         | `year`          | `number \| 'last'`                           | `'last'`   | A calendar year, or the rolling last 12 months.                                                   |
-| `data`         | `data` (JSON)   | `{ date, count, level? }[]`                  | —          | Static data. Skips fetching (great for SSR/SSG). Missing days are filled in.                      |
-| `fetcher`      | _property only_ | `({ username, year, signal }) => Promise<…>` | —          | Your own data source. Return a day array or `{ contributions }`.                                  |
+| `data`         | `data` (JSON)   | `{ date, count, level? }[]`                  | none       | Static data. Skips fetching (great for SSR/SSG). Missing days are filled in.                      |
+| `fetcher`      | _property only_ | `({ username, year, signal }) => Promise<…>` | none       | Your own data source. Return a day array or `{ contributions }`.                                  |
 | `endpoint`     | `endpoint`      | `string`                                     | public API | URL template with `{username}` and `{year}`, returning the default API's shape (e.g. your proxy). |
 | `yearSelector` | `year-selector` | `boolean \| YearSelection[]`                 | `false`    | Built-in year switcher (last year + past 5 years, or your list).                                  |
 | `weekStart`    | `week-start`    | `0 \| 1`                                     | `0`        | Sunday (GitHub) or Monday.                                                                        |
@@ -232,7 +232,7 @@ Every option works as a React prop **and** as a Web Component attribute (kebab-c
 | Prop     | Attribute | Type                                                          | Default   | Description                                                   |
 | -------- | --------- | ------------------------------------------------------------- | --------- | ------------------------------------------------------------- |
 | `sound`  | `sound`   | `'blue' \| 'brown' \| 'red' \| 'cream' \| SoundPack \| false` | `'brown'` | Switch profile, your own samples, or silence (`sound="off"`). |
-| `volume` | `volume`  | `number` (0–1)                                                | `0.5`     |                                                               |
+| `volume` | `volume`  | `number` (0 to 1)                                             | `0.5`     |                                                               |
 | `muted`  | `muted`   | `boolean`                                                     | `false`   |                                                               |
 
 ### Motion & behaviour
@@ -245,27 +245,27 @@ Every option works as a React prop **and** as a Web Component attribute (kebab-c
 | `themeTransition` | `theme-transition` | `boolean \| { origin, duration, stagger }` | `true`   | Colour changes sweep across the keys from `origin` (viewport point).          |
 | `ghostTyping`     | `ghost-typing`     | `boolean \| { interval, burst }`           | `false`  | Idle keys press themselves softly; stops on the first real interaction.       |
 | `reducedMotion`   | `reduced-motion`   | `'user' \| 'always' \| 'never'`            | `'user'` | `user` follows `prefers-reduced-motion`.                                      |
-| `locale`          | `locale`           | `string`                                   | —        | BCP 47 locale for dates and numbers.                                          |
-| `formatTooltip`   | _property only_    | `(day) => string`                          | —        | Custom tooltip text.                                                          |
-| `formatAriaLabel` | _property only_    | `(day) => string`                          | —        | Custom screen-reader label.                                                   |
-| `formatTotal`     | _property only_    | `(total, year) => string`                  | —        | Custom total line.                                                            |
+| `locale`          | `locale`           | `string`                                   | none     | BCP 47 locale for dates and numbers.                                          |
+| `formatTooltip`   | _property only_    | `(day) => string`                          | none     | Custom tooltip text.                                                          |
+| `formatAriaLabel` | _property only_    | `(day) => string`                          | none     | Custom screen-reader label.                                                   |
+| `formatTotal`     | _property only_    | `(total, year) => string`                  | none     | Custom total line.                                                            |
 
 ### Events
 
-| React          | Web Component event | Payload                                                                             |
-| -------------- | ------------------- | ----------------------------------------------------------------------------------- |
-| `onKeyPress`   | `kg-keypress`       | `{ date, count, level, col, row, source }`                                          |
-| `onLoad`       | `kg-load`           | `{ days, total, year, username }`                                                   |
-| `onError`      | `kg-error`          | `KeyboardGraphError` (`code`: `not-found` · `rate-limited` · `network` · `invalid`) |
-| `onYearChange` | `kg-yearchange`     | `{ year }`                                                                          |
+| React          | Web Component event | Payload                                                                      |
+| -------------- | ------------------- | ---------------------------------------------------------------------------- |
+| `onKeyPress`   | `clacky-keypress`   | `{ date, count, level, col, row, source }`                                   |
+| `onLoad`       | `clacky-load`       | `{ days, total, year, username }`                                            |
+| `onError`      | `clacky-error`      | `ClackyError` (`code`: `not-found` · `rate-limited` · `network` · `invalid`) |
+| `onYearChange` | `clacky-yearchange` | `{ year }`                                                                   |
 
 ### Imperative API
 
 Available on a React `ref` and as methods on the element.
 
 ```tsx
-const graph = useRef<KeyboardGraphHandle>(null);
-<KeyboardGraph ref={graph} username="Rishabjs03" />;
+const graph = useRef<ClackyHandle>(null);
+<Clacky ref={graph} username="Rishabjs03" />;
 
 graph.current.press('2026-08-12'); // press a day by date (or index)
 graph.current.pressAt(10, 3, { sound: true }); // press by column (week) / row (weekday)
@@ -290,7 +290,7 @@ graph.current.getDays(); // ContributionDay[]
 ### 1. A preset
 
 ```tsx
-<KeyboardGraph username="Rishabjs03" theme="retro" colorScheme="auto" />
+<Clacky username="Rishabjs03" theme="retro" colorScheme="auto" />
 ```
 
 ### 2. A custom theme object
@@ -298,7 +298,7 @@ graph.current.getDays(); // ContributionDay[]
 Override any colour of a preset. Top-level values apply to both schemes; `dark` overrides dark mode only.
 
 ```tsx
-<KeyboardGraph
+<Clacky
   username="Rishabjs03"
   theme={{
     extends: 'mono',
@@ -308,7 +308,7 @@ Override any colour of a preset. Top-level values apply to both schemes; `dark` 
     plate: '#f8faff', // background plate
     text: '#4c4f6b', // labels, legend, totals
     focus: '#4f46e5', // keyboard focus ring
-    highlight: 0.35, // strength of the glossy highlight (0–1)
+    highlight: 0.35, // strength of the glossy highlight (0 to 1)
     tooltip: { background: '#1e1b4b', text: '#fff', border: 'transparent' },
     dark: { plate: '#0b0b1a', levels: ['#1c1b33'] },
   }}
@@ -316,9 +316,9 @@ Override any colour of a preset. Top-level values apply to both schemes; `dark` 
 ```
 
 ```html
-<keyboard-graph
+<clacky-graph
   theme='{"extends":"ocean","levels":["#eee","#cde","#9bd","#59b","#246"]}'
-></keyboard-graph>
+></clacky-graph>
 ```
 
 ### 3. Plain CSS custom properties
@@ -326,28 +326,28 @@ Override any colour of a preset. Top-level values apply to both schemes; `dark` 
 The variables inherit through the shadow DOM, so this works for both the element and the React component:
 
 ```css
-keyboard-graph,
-.kg-root {
-  --kg-level-0: #eceff4; /* override in both schemes… */
-  --kg-level-4: #5e81ac;
-  --kg-dark-plate: #2e3440; /* …or in one scheme only: --kg-light-* / --kg-dark-* */
-  --kg-font: 'Inter', sans-serif;
+clacky-graph,
+.clacky-root {
+  --clacky-level-0: #eceff4; /* override in both schemes… */
+  --clacky-level-4: #5e81ac;
+  --clacky-dark-plate: #2e3440; /* …or in one scheme only: --clacky-light-* / --clacky-dark-* */
+  --clacky-font: 'Inter', sans-serif;
 }
 ```
 
-| Variable                                                        | Controls                                |
-| --------------------------------------------------------------- | --------------------------------------- |
-| `--kg-level-0` … `--kg-level-4`                                 | Keycap colours per contribution level   |
-| `--kg-side`                                                     | Colour mixed in to shade the side walls |
-| `--kg-shadow`                                                   | Drop shadow under each key              |
-| `--kg-plate`                                                    | Background plate                        |
-| `--kg-text`                                                     | Labels, totals, legend                  |
-| `--kg-focus`                                                    | Focus ring                              |
-| `--kg-highlight`                                                | Gloss strength (0–1)                    |
-| `--kg-tooltip-bg` · `--kg-tooltip-text` · `--kg-tooltip-border` | Tooltip                                 |
-| `--kg-font`                                                     | Font stack                              |
+| Variable                                                                    | Controls                                |
+| --------------------------------------------------------------------------- | --------------------------------------- |
+| `--clacky-level-0` … `--clacky-level-4`                                     | Keycap colours per contribution level   |
+| `--clacky-side`                                                             | Colour mixed in to shade the side walls |
+| `--clacky-shadow`                                                           | Drop shadow under each key              |
+| `--clacky-plate`                                                            | Background plate                        |
+| `--clacky-text`                                                             | Labels, totals, legend                  |
+| `--clacky-focus`                                                            | Focus ring                              |
+| `--clacky-highlight`                                                        | Gloss strength (0 to 1)                 |
+| `--clacky-tooltip-bg` · `--clacky-tooltip-text` · `--clacky-tooltip-border` | Tooltip                                 |
+| `--clacky-font`                                                             | Font stack                              |
 
-Precedence: `--kg-<token>` (CSS) › `theme` prop › preset defaults. The element also exposes
+Precedence: `--clacky-<token>` (CSS) › `theme` prop › preset defaults. The element also exposes
 `::part(root | plate | grid | key | tooltip | total | year)` for structural styling.
 
 ---
@@ -377,7 +377,7 @@ inside the graph, never on page load.
 **Your own samples:**
 
 ```tsx
-<KeyboardGraph
+<Clacky
   username="Rishabjs03"
   sound={{ down: ['/sounds/down-1.wav', '/sounds/down-2.wav'], up: ['/sounds/up-1.wav'] }}
 />
@@ -391,7 +391,7 @@ Samples are fetched and decoded once (with an `OfflineAudioContext`, so before a
 
 | Mode                   | Example                                                                  | Needs a token? |
 | ---------------------- | ------------------------------------------------------------------------ | -------------- |
-| Username (default API) | `<KeyboardGraph username="octocat" />`                                   | No             |
+| Username (default API) | `<Clacky username="octocat" />`                                          | No             |
 | Your endpoint          | `endpoint="/api/contributions/{username}?y={year}"`                      | Server-side    |
 | Custom fetcher         | `fetcher={({ username, year, signal }) => fetch(…).then(r => r.json())}` | Up to you      |
 | Static data            | `data={[{ date: '2026-08-12', count: 12 }]}`                             | No             |
@@ -407,17 +407,17 @@ a user with no contributions still gets a full, blank keyboard.
 ## 🔐 Self-hosted proxy
 
 For production traffic, or to avoid depending on a community service, run your own tiny proxy that
-talks to **GitHub's GraphQL API** with your token. `keyboard-graph/server` does the work:
+talks to **GitHub's GraphQL API** with your token. `clacky/server` does the work:
 
 ```ts
 // app/api/contributions/[username]/route.ts (Next.js)
-import { createContributionsHandler } from 'keyboard-graph/server';
+import { createContributionsHandler } from 'clacky/server';
 
 export const GET = createContributionsHandler(); // reads process.env.GITHUB_TOKEN
 ```
 
 ```tsx
-<KeyboardGraph username="octocat" endpoint="/api/contributions/{username}?y={year}" />
+<Clacky username="octocat" endpoint="/api/contributions/{username}?y={year}" />
 ```
 
 Ready-made examples: [Vercel Function](./examples/proxy-vercel) · [Netlify Function](./examples/proxy-netlify).
@@ -460,7 +460,7 @@ Need the data elsewhere? `fetchGitHubContributions({ token, username, year })` r
 
 ## 🖥️ SSR & browser support
 
-- Nothing touches `window`/`document` at import time. `keyboard-graph/element` only registers in the browser.
+- Nothing touches `window`/`document` at import time. `clacky/element` only registers in the browser.
 - With `data`, the React component server-renders the full keyboard (hidden until the entrance wave runs, with a CSS failsafe if JavaScript never loads).
 - Evergreen browsers: **Chrome/Edge 111+, Safari 16.4+, Firefox 113+** (uses `color-mix()`, container query units and WAAPI). The tooltip uses the Popover API where available and falls back to fixed positioning.
 
@@ -481,11 +481,11 @@ Please read this before shipping to production.
 
 ```
 .
-├── packages/keyboard-graph   # the library (published to npm)
+├── packages/clacky   # the library (published to npm)
 │   ├── src/core              # data, layout, theme, styles, springs, interactions, tooltip
 │   ├── src/audio             # switch synthesiser + Web Audio voice pool
-│   ├── src/react             # <KeyboardGraph> + Motion animator + useContributions
-│   ├── src/element           # <keyboard-graph> custom element (WAAPI animator)
+│   ├── src/react             # <Clacky> + Motion animator + useContributions
+│   ├── src/element           # <clacky-graph> custom element (WAAPI animator)
 │   ├── src/server            # GitHub GraphQL helper + Fetch-API proxy handler
 │   └── test                  # Vitest unit tests
 ├── apps/demo                 # Next.js (App Router) + Tailwind + Motion showcase site

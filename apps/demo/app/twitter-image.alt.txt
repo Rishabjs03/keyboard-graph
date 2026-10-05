@@ -1,1 +1,1 @@
-keyboard-graph: your GitHub contribution graph as a mechanical keyboard
+clacky: your GitHub contribution graph as a mechanical keyboard

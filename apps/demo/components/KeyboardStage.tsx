@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react';
 import type { CSSProperties, ReactNode } from 'react';
-import type { ThemePalette } from 'keyboard-graph';
+import type { ThemePalette } from 'clacky';
 
 interface Props {
   palette: ThemePalette;
@@ -21,7 +21,7 @@ function Led({ on, color, label }: { on: boolean; color: string; label: string }
         initial={false}
         animate={{
           backgroundColor: on ? color : 'rgba(127,127,127,0.35)',
-          boxShadow: on ? `0 0 6px 1px ${color}` : '0 0 0 0 rgba(0,0,0,0)',
+          boxShadow: on ? `0 0 6px 1px ${color}` : '0 0 0 0 rgba(60,42,18,0)',
         }}
         transition={{ duration: 0.35 }}
       />
@@ -80,12 +80,12 @@ export function KeyboardStage({ palette, scheme, soundOn, ghostOn, typed, childr
           className="pointer-events-none absolute inset-0 rounded-[26px] transition-shadow duration-700"
           style={{
             boxShadow: dark
-              ? 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6), 0 30px 60px -30px rgba(0,0,0,0.55), 0 16px 32px -20px rgba(0,0,0,0.35)'
-              : 'inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 0 var(--case-edge), 0 0 0 1px rgba(0,0,0,0.06), 0 30px 60px -32px rgba(15,23,42,0.28), 0 14px 28px -20px rgba(15,23,42,0.16)',
+              ? 'inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -2px 0 rgba(0,0,0,0.4), 0 0 0 1px rgba(0,0,0,0.6), 0 30px 60px -30px rgba(40,26,8,0.6), 0 16px 32px -20px rgba(40,26,8,0.4)'
+              : 'inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -2px 0 var(--case-edge), 0 0 0 1px rgba(60,42,18,0.06), 0 30px 60px -32px rgba(60,42,18,0.28), 0 14px 28px -20px rgba(60,42,18,0.16)',
           }}
         />
         <div className="relative mb-1.5 flex items-center justify-between px-2 text-[9.5px] font-medium uppercase tracking-[0.22em] opacity-70">
-          <span>keyboard·graph</span>
+          <span>clacky</span>
           <span className="flex items-center gap-3.5 tracking-[0.16em]">
             <Led on={soundOn} color={palette.levels[3]} label="Sound" />
             <Led on={ghostOn} color={palette.levels[3]} label="Idle" />
@@ -97,7 +97,7 @@ export function KeyboardStage({ palette, scheme, soundOn, ghostOn, typed, childr
       {/* Ground shadow */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-x-[6%] -bottom-7 -z-10 h-12 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(15,23,42,0.22),transparent_70%)] blur-md"
+        className="pointer-events-none absolute inset-x-[6%] -bottom-7 -z-10 h-12 rounded-[50%] bg-[radial-gradient(ellipse_at_center,rgba(60,42,18,0.3),transparent_70%)] blur-md"
       />
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import { useId, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
-import { themeNames, themes, type ThemeName } from 'keyboard-graph';
+import { themeNames, themes, type ThemeName } from 'clacky';
 import { uiClick } from './uiSound';
 
 type Point = { x: number; y: number };
@@ -111,10 +111,10 @@ export function ThemeSwatches({
 
 function legendColor(hex: string) {
   const m = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex);
-  if (!m) return '#0a0a0a';
+  if (!m) return '#16120d';
   const [r, g, b] = [m[1], m[2], m[3]].map((v) => Number.parseInt(v!, 16) / 255);
   const lum = 0.2126 * r! + 0.7152 * g! + 0.0722 * b!;
-  return lum > 0.6 ? 'rgba(10,10,10,0.55)' : 'rgba(255,255,255,0.85)';
+  return lum > 0.6 ? 'rgba(22,18,13,0.55)' : 'rgba(255,255,255,0.85)';
 }
 
 /** One keycap per level; clicking opens the native colour picker. */
@@ -169,7 +169,7 @@ export function LevelColors({
           x: custom ? 0 : -6,
           pointerEvents: custom ? 'auto' : 'none',
         }}
-        className="ml-1 rounded-full px-2.5 py-1 text-[12.5px] text-muted transition-colors hover:bg-neutral-100 hover:text-ink"
+        className="ml-1 rounded-full px-2.5 py-1 text-[12.5px] text-muted transition-colors hover:bg-sand hover:text-ink"
         aria-hidden={!custom}
         tabIndex={custom ? 0 : -1}
       >
@@ -202,7 +202,7 @@ export function Segmented<T extends string>({
     <div
       role="radiogroup"
       aria-label={label}
-      className="inline-flex flex-wrap rounded-full bg-neutral-100/80 p-1 shadow-[inset_0_1px_2px_rgba(0,0,0,0.06)]"
+      className="inline-flex flex-wrap rounded-full bg-sand p-1 shadow-[inset_0_1px_2px_rgba(60,42,18,0.06)]"
     >
       {options.map((option) => {
         const active = option.value === value;
@@ -224,7 +224,7 @@ export function Segmented<T extends string>({
             {active && (
               <motion.span
                 layoutId={`${id}-pill`}
-                className="absolute inset-0 rounded-full bg-white shadow-[0_1px_2px_rgba(0,0,0,0.1),0_0_0_0.5px_rgba(0,0,0,0.06)]"
+                className="absolute inset-0 rounded-full bg-paper shadow-[0_1px_2px_rgba(60,42,18,0.1),0_0_0_0.5px_rgba(60,42,18,0.06)]"
                 transition={{ type: 'spring', stiffness: 500, damping: 36 }}
               />
             )}
@@ -260,13 +260,13 @@ export function Toggle({
         onChange(!checked);
       }}
       className={`relative flex h-6 w-10 shrink-0 items-center rounded-full p-0.5 transition-colors duration-300 ${
-        checked ? 'justify-end bg-ink' : 'justify-start bg-neutral-200'
+        checked ? 'justify-end bg-ink' : 'justify-start bg-line-strong'
       }`}
     >
       <motion.span
         layout
         transition={{ type: 'spring', stiffness: 700, damping: 34 }}
-        className="h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.25)]"
+        className="h-5 w-5 rounded-full bg-white shadow-[0_1px_3px_rgba(60,42,18,0.25)]"
       />
     </button>
   );

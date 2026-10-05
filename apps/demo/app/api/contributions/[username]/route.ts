@@ -1,10 +1,10 @@
-import { createContributionsHandler } from 'keyboard-graph/server';
+import { createContributionsHandler } from 'clacky/server';
 
 /**
  * GET /api/contributions/:username?y=2025
  *
  * With GITHUB_TOKEN set, contributions come straight from GitHub's GraphQL API
- * (via `keyboard-graph/server`). Without it, the request is passed through to the
+ * (via `clacky/server`). Without it, the request is passed through to the
  * public community API so the demo works with zero configuration.
  */
 const githubHandler = createContributionsHandler({ maxAge: 3600 });

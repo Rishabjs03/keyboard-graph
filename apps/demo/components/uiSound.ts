@@ -1,6 +1,6 @@
 'use client';
 
-import { SwitchAudio, type SoundOption } from 'keyboard-graph';
+import { SwitchAudio, type SoundOption } from 'clacky';
 
 /**
  * The demo's controls click with the same synthesised switch as the graph, so the

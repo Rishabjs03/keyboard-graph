@@ -1,4 +1,4 @@
-import type { CustomTheme, SoundOption, ThemeName } from 'keyboard-graph';
+import type { CustomTheme, SoundOption, ThemeName } from 'clacky';
 
 export interface SnippetSettings {
   username: string;
@@ -34,11 +34,11 @@ export function reactSnippet(s: SnippetSettings): string {
   props.push('yearSelector');
   if (s.ghostTyping) props.push('ghostTyping');
 
-  return `import { KeyboardGraph } from 'keyboard-graph/react';
+  return `import { Clacky } from 'clacky/react';
 
 export function Contributions() {
   return (
-    <KeyboardGraph
+    <Clacky
       ${props.join('\n      ')}
       onKeyPress={(day) => console.log(day.date, day.count)}
     />
@@ -62,16 +62,16 @@ export function htmlSnippet(s: SnippetSettings): string {
   attrs.push('year-selector');
   if (s.ghostTyping) attrs.push('ghost-typing');
 
-  return `<script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+  return `<script src="https://unpkg.com/clacky/dist/clacky.iife.js"></script>
 
-<keyboard-graph
+<clacky-graph
   ${attrs.join('\n  ')}
-></keyboard-graph>
+></clacky-graph>
 
 <script>
-  document.querySelector('keyboard-graph')
-    .addEventListener('kg-keypress', (e) => console.log(e.detail));
+  document.querySelector('clacky-graph')
+    .addEventListener('clacky-keypress', (e) => console.log(e.detail));
 </script>`;
 }
 
-export const INSTALL_COMMAND = 'npm install keyboard-graph motion';
+export const INSTALL_COMMAND = 'npm install clacky motion';

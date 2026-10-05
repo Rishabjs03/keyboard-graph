@@ -1,8 +1,8 @@
 {
-  "name": "keyboard-graph-proxy-netlify",
+  "name": "clacky-proxy-netlify",
   "private": true,
   "type": "module",
   "dependencies": {
-    "keyboard-graph": "^0.1.0"
+    "clacky": "^0.1.0"
   }
 }

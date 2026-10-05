@@ -3,7 +3,7 @@ import { GeistMono } from 'geist/font/mono';
 import { GeistSans } from 'geist/font/sans';
 import './globals.css';
 
-const title = 'keyboard-graph — your GitHub contributions as a mechanical keyboard';
+const title = 'Clacky · Your GitHub contributions as a mechanical keyboard';
 const description =
   'Render your GitHub contribution graph as a grid of clickable mechanical keycaps, with tactile press animations and switch sounds. React component and Web Component.';
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#ffffff',
+  themeColor: '#e4d9c6',
   width: 'device-width',
   initialScale: 1,
 };

@@ -2,8 +2,8 @@
 
 import { motion, useReducedMotion } from 'motion/react';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { resolveTheme, themes, type CustomTheme, type ThemeName } from 'keyboard-graph';
-import { KeyboardGraph, type KeyboardGraphHandle, type SwitchProfile } from 'keyboard-graph/react';
+import { resolveTheme, themes, type CustomTheme, type ThemeName } from 'clacky';
+import { Clacky, type ClackyHandle, type SwitchProfile } from 'clacky/react';
 import { htmlSnippet, INSTALL_COMMAND, reactSnippet, type SnippetSettings } from '@/lib/snippet';
 import { useTypeToPlay } from '@/lib/useTypeToPlay';
 import { CodeTabs, CopyButton } from './CodeBlock';
@@ -57,7 +57,7 @@ function SectionTitle({
       </div>
       <h2 className="mt-2.5 text-[28px] font-semibold tracking-[-0.035em]">{title}</h2>
       {children && (
-        <p className="mx-auto mt-2.5 max-w-[52ch] text-[14.5px] leading-relaxed text-muted">
+        <p className="mx-auto mt-2.5 max-w-[58ch] text-[14.5px] leading-relaxed text-muted">
           {children}
         </p>
       )}
@@ -67,7 +67,7 @@ function SectionTitle({
 
 export function Playground() {
   const reduce = useReducedMotion();
-  const graph = useRef<KeyboardGraphHandle>(null);
+  const graph = useRef<ClackyHandle>(null);
 
   // ── Data source ───────────────────────────────────────────────────────────
   const [input, setInput] = useState(DEFAULT_USER);
@@ -196,7 +196,7 @@ export function Playground() {
             ghostOn={ghost}
             typed={typed}
           >
-            <KeyboardGraph
+            <Clacky
               ref={graph}
               username={username}
               endpoint={ENDPOINT}
@@ -221,7 +221,7 @@ export function Playground() {
           className="mt-12 flex items-center justify-center gap-2 text-[12.5px] text-faint"
         >
           <Keyboard width={14} height={14} />
-          Press any key — or just start typing your name.
+          Press any key, or just start typing your name.
         </motion.p>
       </section>
 
@@ -232,7 +232,7 @@ export function Playground() {
           </SectionTitle>
         </Reveal>
         <Reveal delay={0.05}>
-          <div className="divide-y divide-line rounded-2xl border border-line bg-white px-5 shadow-[0_1px_2px_rgba(0,0,0,0.04),0_20px_40px_-30px_rgba(0,0,0,0.2)] sm:px-7">
+          <div className="divide-y divide-line rounded-2xl border border-line bg-paper px-5 shadow-[0_1px_2px_rgba(60,42,18,0.04),0_20px_40px_-30px_rgba(60,42,18,0.2)] sm:px-7">
             <ControlRow label="Theme" hint="Eight presets, light & dark">
               <ThemeSwatches value={theme} scheme={scheme} onChange={selectTheme} />
             </ControlRow>
@@ -267,7 +267,7 @@ export function Playground() {
                   aria-label={muted ? 'Unmute' : 'Mute'}
                   aria-pressed={muted}
                   className={`grid h-8 w-8 shrink-0 place-items-center rounded-full transition-colors ${
-                    muted ? 'bg-neutral-100 text-faint' : 'text-ink hover:bg-neutral-100'
+                    muted ? 'bg-sand text-faint' : 'text-ink hover:bg-sand'
                   }`}
                 >
                   {muted ? <VolumeOff /> : <Volume />}
@@ -315,11 +315,11 @@ export function Playground() {
       <section className="mt-24 w-full max-w-[880px]" aria-labelledby="code">
         <Reveal>
           <SectionTitle eyebrow="Get the code" title="One line to drop in">
-            Works in React, or anywhere HTML does — Astro, Vue, Svelte, plain pages.
+            Works in React, or anywhere HTML does: Astro, Vue, Svelte and plain pages.
           </SectionTitle>
         </Reveal>
         <Reveal delay={0.05}>
-          <div className="mb-4 flex items-center justify-between gap-3 rounded-full border border-line bg-white py-1.5 pl-5 pr-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.04)]">
+          <div className="mb-4 flex items-center justify-between gap-3 rounded-full border border-line bg-paper py-1.5 pl-5 pr-1.5 shadow-[0_1px_2px_rgba(60,42,18,0.04)]">
             <code className="truncate font-mono text-[13px]">
               <span className="select-none text-faint">$ </span>
               {INSTALL_COMMAND}

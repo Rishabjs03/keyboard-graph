@@ -1,4 +1,4 @@
-import { createContributionsHandler } from 'keyboard-graph/server';
+import { createContributionsHandler } from 'clacky/server';
 
 /**
  * GET /api/contributions?username=octocat&y=2025

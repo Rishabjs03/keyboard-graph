@@ -41,7 +41,7 @@ jobs:
         run: pnpm test
 
       - name: Packaging smoke test (ESM + CJS + SSR)
-        run: pnpm --filter keyboard-graph smoke
+        run: pnpm --filter clacky smoke
 
       - name: Build demo
         run: pnpm --filter demo build
@@ -49,4 +49,4 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Bundle size
-        run: pnpm --filter keyboard-graph size
+        run: pnpm --filter clacky size

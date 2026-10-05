@@ -4,8 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { GitHub, Star } from './icons';
 
-export const REPO_URL = 'https://github.com/Rishabjs03/3d-git';
-const REPO_API = 'https://api.github.com/repos/Rishabjs03/3d-git';
+export const REPO_URL = 'https://github.com/Rishabjs03/keyboard-graph';
+const REPO_API = 'https://api.github.com/repos/Rishabjs03/keyboard-graph';
 
 function useStars() {
   const [stars, setStars] = useState<number | null>(null);
@@ -47,10 +47,10 @@ export function Header() {
     <header className="flex flex-col items-center text-center">
       <motion.div
         {...fadeUp(reduce, 0)}
-        className="flex items-center gap-2 rounded-full border border-line bg-white py-1.5 pl-2 pr-3.5 text-[13px] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.04)]"
+        className="flex items-center gap-2 rounded-full border border-line bg-paper py-1.5 pl-2 pr-3.5 text-[13px] font-medium shadow-[0_1px_2px_rgba(60,42,18,0.04)]"
       >
         <LogoKey />
-        <span>keyboard-graph</span>
+        <span>clacky</span>
       </motion.div>
 
       <motion.h1
@@ -75,7 +75,7 @@ export function Header() {
         rel="noreferrer"
         whileHover={{ y: -1 }}
         whileTap={{ y: 1, scale: 0.98 }}
-        className="group mt-7 inline-flex items-center overflow-hidden rounded-full border border-line bg-white text-[13px] font-medium shadow-[0_1px_2px_rgba(0,0,0,0.05),0_4px_12px_-6px_rgba(0,0,0,0.12)] transition-shadow hover:shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_20px_-8px_rgba(0,0,0,0.18)]"
+        className="group mt-7 inline-flex items-center overflow-hidden rounded-full border border-line bg-paper text-[13px] font-medium shadow-[0_1px_2px_rgba(60,42,18,0.05),0_4px_12px_-6px_rgba(60,42,18,0.12)] transition-shadow hover:shadow-[0_1px_2px_rgba(60,42,18,0.06),0_8px_20px_-8px_rgba(60,42,18,0.18)]"
       >
         <span className="flex items-center gap-2 py-2 pl-3.5 pr-3">
           <GitHub />

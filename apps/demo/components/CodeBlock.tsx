@@ -39,7 +39,7 @@ export function CopyButton({ text, className = '' }: { text: string; className?:
       whileTap={{ scale: 0.94 }}
       aria-label={copied ? 'Copied' : 'Copy to clipboard'}
       className={`relative flex h-8 items-center gap-1.5 overflow-hidden rounded-full px-3 text-[12.5px] font-medium transition-colors ${
-        copied ? 'bg-emerald-50 text-emerald-700' : 'text-muted hover:bg-neutral-100 hover:text-ink'
+        copied ? 'bg-emerald-50 text-emerald-700' : 'text-muted hover:bg-sand hover:text-ink'
       } ${className}`}
     >
       <AnimatePresence mode="popLayout" initial={false}>
@@ -71,7 +71,7 @@ export function CodeTabs({ tabs }: { tabs: Tab[] }) {
   const html = useMemo(() => highlight(tab.code), [tab.code]);
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-[0_1px_2px_rgba(0,0,0,0.04),0_20px_40px_-28px_rgba(0,0,0,0.2)]">
+    <div className="overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_1px_2px_rgba(60,42,18,0.04),0_20px_40px_-28px_rgba(60,42,18,0.2)]">
       <div className="flex items-center justify-between border-b border-line px-2.5 py-2">
         <div role="tablist" aria-label="Snippet language" className="flex gap-1">
           {tabs.map((t) => (
@@ -88,7 +88,7 @@ export function CodeTabs({ tabs }: { tabs: Tab[] }) {
               {t.id === active && (
                 <motion.span
                   layoutId="code-tab"
-                  className="absolute inset-0 rounded-full bg-neutral-100"
+                  className="absolute inset-0 rounded-full bg-sand"
                   transition={{ type: 'spring', stiffness: 500, damping: 38 }}
                 />
               )}
