@@ -1,0 +1,8 @@
+{
+  "name": "keyboard-graph-proxy-netlify",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "keyboard-graph": "^0.1.0"
+  }
+}

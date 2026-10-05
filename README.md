@@ -1,3 +1,514 @@
-# keyboard-graph
+<div align="center">
 
-Your GitHub contribution graph as a grid of clickable mechanical keycaps.
+<!--
+  Demo recording. To refresh it, record the demo site (apps/demo) and replace
+  .github/assets/demo.gif (~880px wide, under 4 MB) and demo.mp4.
+-->
+<a href="https://github.com/Rishabjs03/3d-git#readme">
+  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/demo.gif" alt="keyboard-graph: a GitHub contribution graph rendered as mechanical keycaps that press down with a sound" width="880" />
+</a>
+
+<h1>⌨️ keyboard-graph</h1>
+
+<p><b>Your GitHub contribution graph as a grid of clickable mechanical keycaps.</b><br/>
+Every day is a key. Press one: it travels down, springs back, clicks like a real switch, and tells you what you shipped.</p>
+
+<p>
+  <a href="https://www.npmjs.com/package/keyboard-graph"><img alt="npm" src="https://img.shields.io/npm/v/keyboard-graph?color=0a0a0a&label=npm"></a>
+  <a href="https://bundlephobia.com/package/keyboard-graph"><img alt="bundle size" src="https://img.shields.io/badge/web%20component-19%20kB%20gzip-0a0a0a"></a>
+  <a href="./LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-0a0a0a"></a>
+  <img alt="TypeScript" src="https://img.shields.io/badge/types-included-0a0a0a">
+  <img alt="SSR safe" src="https://img.shields.io/badge/SSR-safe-0a0a0a">
+</p>
+
+<p>
+  <a href="#-quick-start"><b>Quick start</b></a> ·
+  <a href="#-props--attributes"><b>Props</b></a> ·
+  <a href="#-theming"><b>Theming</b></a> ·
+  <a href="#-sound"><b>Sound</b></a> ·
+  <a href="#-self-hosted-proxy"><b>Proxy</b></a> ·
+  <a href="./apps/demo"><b>Demo site</b></a>
+</p>
+
+</div>
+
+---
+
+## ✨ Highlights
+
+|                               |                                                                                                                                                  |
+| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 🎹 **Real keycaps, pure CSS** | Concave dish, side skirt, specular highlight, soft drop shadow. No images, no canvas, no WebGL.                                                  |
+| 🪀 **Tactile press**          | The key bottoms out in 55 ms, then a physically simulated spring returns it with a hint of overshoot. Neighbours dip and glow in sympathy.       |
+| 🔊 **Switch sounds**          | Blue (clicky), Brown (tactile), Red (linear) and Cream (deep thock), **synthesised in the browser**: no samples, no licensing questions.         |
+| 🎨 **8 themes + your own**    | Presets with light and dark palettes, a `theme` object, or plain CSS custom properties. Theme changes ripple across the keys as a wave.          |
+| ♿ **Accessible**             | Arrow-key navigation, Enter/Space presses, screen-reader labels, a visible focus ring, and `prefers-reduced-motion` support.                     |
+| ⚡ **Fast**                   | About 370 keys, **7 delegated listeners**, and presses that animate only `transform`/`opacity` on the compositor. Presses never re-render React. |
+| 🧩 **Works everywhere**       | A React component **and** a framework-free `<keyboard-graph>` custom element (Astro, Vue, Svelte, plain HTML). SSR-safe. ESM + CJS + types.      |
+| 🔌 **Bring your own data**    | By username (no token needed), your own endpoint or fetcher, or a static `data` array. Includes a self-hosted GitHub GraphQL proxy helper.       |
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/press-tooltip.png" alt="A pressed key with its tooltip: No contributions on Sat, 1 Aug 2026" width="340" />
+  &nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/keycap-closeup.png" alt="Close-up of the CSS keycaps showing the dish, skirt and shadow" width="420" />
+</p>
+
+---
+
+## 📦 Install
+
+```bash
+npm install keyboard-graph motion     # React (Motion powers the React animations)
+npm install keyboard-graph            # Web Component only: no other dependencies
+```
+
+<details>
+<summary>pnpm / yarn / bun / CDN</summary>
+
+```bash
+pnpm add keyboard-graph motion
+yarn add keyboard-graph motion
+bun add keyboard-graph motion
+```
+
+```html
+<!-- No build step: one script tag registers <keyboard-graph> -->
+<script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+```
+
+</details>
+
+**Entry points**
+
+| Import                   | What you get                                                                    | Size (min + gzip)         |
+| ------------------------ | ------------------------------------------------------------------------------- | ------------------------- |
+| `keyboard-graph/react`   | `<KeyboardGraph />`, `useContributions()`                                       | ~18 kB + `motion` (peer)  |
+| `keyboard-graph/element` | Registers `<keyboard-graph>` on import                                          | ~19 kB, zero dependencies |
+| `keyboard-graph`         | Framework-agnostic core: data, layout, themes, styles, audio, interactions      | tree-shakeable            |
+| `keyboard-graph/server`  | `fetchGitHubContributions()`, `createContributionsHandler()` for your own proxy | ~1.6 kB                   |
+
+Sizes include the stylesheet and the sound synthesiser.
+
+---
+
+## 🚀 Quick start
+
+### React
+
+```tsx
+import { KeyboardGraph } from 'keyboard-graph/react';
+
+export function Contributions() {
+  return (
+    <KeyboardGraph
+      username="Rishabjs03"
+      theme="ocean"
+      sound="blue"
+      onKeyPress={(day) => console.log(`${day.count} contributions on ${day.date}`)}
+    />
+  );
+}
+```
+
+> The component is marked `'use client'`, so you can render it straight from a Next.js Server Component. Styles are injected for you (React 19 hoists them into `<head>`, including during SSR).
+
+### Plain HTML (Web Component)
+
+```html
+<script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+
+<keyboard-graph username="Rishabjs03" theme="ocean" sound="blue" year-selector></keyboard-graph>
+
+<script>
+  document
+    .querySelector('keyboard-graph')
+    .addEventListener('kg-keypress', (event) => console.log(event.detail));
+</script>
+```
+
+### Astro, Vue, Svelte, or anything with a bundler
+
+```js
+import 'keyboard-graph/element'; // registers <keyboard-graph> (safe to import on the server)
+```
+
+```astro
+---
+// Astro
+---
+<keyboard-graph username="Rishabjs03" theme="sakura"></keyboard-graph>
+<script>import 'keyboard-graph/element';</script>
+```
+
+```vue
+<!-- Vue: tell the compiler it's a custom element -->
+<!-- vite.config: vue({ template: { compilerOptions: { isCustomElement: (t) => t === 'keyboard-graph' } } }) -->
+<template>
+  <keyboard-graph username="Rishabjs03" theme="night" color-scheme="dark" />
+</template>
+<script setup>
+import 'keyboard-graph/element';
+</script>
+```
+
+```svelte
+<script>
+  import 'keyboard-graph/element';
+</script>
+
+<keyboard-graph username="Rishabjs03" theme="retro" on:kg-keypress={(e) => console.log(e.detail)} />
+```
+
+---
+
+## 🧠 How it works
+
+The library is split into a **framework-agnostic core** and two **thin wrappers**. Both wrappers render the
+same DOM, use the same stylesheet, and hand the grid to the same interaction controller. Only the
+animation engine differs.
+
+```mermaid
+flowchart LR
+  subgraph Core["keyboard-graph (core)"]
+    D["data.ts<br/>fetch · cache · normalise"] --> L["layout.ts<br/>53 × 7 week grid"]
+    T["theme.ts<br/>presets → CSS variables"]
+    S["styles.ts<br/>keycap CSS"]
+    A["audio/<br/>synth + voice pool"]
+    I["interactions.ts<br/>delegated events · nav · ripple"]
+  end
+  L --> R["React wrapper<br/>JSX + Motion animator"]
+  L --> W["Web Component<br/>shadow DOM + WAAPI animator"]
+  T --> R & W
+  S --> R & W
+  A --> I
+  I --> R & W
+```
+
+1. **Data**: contributions are fetched (or taken from `data`), sorted, gap-filled, and bucketed into levels 0–4 (GitHub's quartile method when levels are missing).
+2. **Layout**: each day gets a `col` (week) and `row` (weekday), exactly like GitHub's calendar, with month and weekday labels.
+3. **Render**: each key is a `<button>` with three spans: a shadow, a skirt (the side wall) and a cap (the top, with a concave dish drawn with gradients). Colours come from CSS variables, so themes are just variable swaps.
+4. **Size**: key size is solved in CSS with container query units (`100cqi / columns`). The graph shrinks to fit its container, then scrolls with snap on very small screens. There's no JS measuring.
+5. **Interact**: seven listeners on the grid (not one per key) drive presses, keyboard navigation and tooltips. Presses animate imperatively, so React never re-renders on a keypress.
+6. **Animate**: the web component plays spring curves baked into WAAPI keyframes (compositor-thread). The React wrapper uses [Motion](https://motion.dev), which hands springs to the browser as hardware-accelerated `linear()` curves.
+7. **Sound**: on the first user gesture an `AudioContext` is created. Switch sounds are synthesised once (filtered noise + damped resonances), cached, and played through a fixed pool of voices with random pitch and gain.
+
+---
+
+## ⚙️ Props / attributes
+
+Every option works as a React prop **and** as a Web Component attribute (kebab-case) or property.
+
+### Data
+
+| Prop (React)   | Attribute       | Type                                         | Default    | Description                                                                                       |
+| -------------- | --------------- | -------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------- |
+| `username`     | `username`      | `string`                                     | —          | GitHub username to fetch.                                                                         |
+| `year`         | `year`          | `number \| 'last'`                           | `'last'`   | A calendar year, or the rolling last 12 months.                                                   |
+| `data`         | `data` (JSON)   | `{ date, count, level? }[]`                  | —          | Static data. Skips fetching (great for SSR/SSG). Missing days are filled in.                      |
+| `fetcher`      | _property only_ | `({ username, year, signal }) => Promise<…>` | —          | Your own data source. Return a day array or `{ contributions }`.                                  |
+| `endpoint`     | `endpoint`      | `string`                                     | public API | URL template with `{username}` and `{year}`, returning the default API's shape (e.g. your proxy). |
+| `yearSelector` | `year-selector` | `boolean \| YearSelection[]`                 | `false`    | Built-in year switcher (last year + past 5 years, or your list).                                  |
+| `weekStart`    | `week-start`    | `0 \| 1`                                     | `0`        | Sunday (GitHub) or Monday.                                                                        |
+
+### Appearance
+
+| Prop              | Attribute           | Type                          | Default    | Description                                                     |
+| ----------------- | ------------------- | ----------------------------- | ---------- | --------------------------------------------------------------- |
+| `theme`           | `theme`             | preset name \| `CustomTheme`  | `'github'` | See [Theming](#-theming). The attribute also accepts JSON.      |
+| `colorScheme`     | `color-scheme`      | `'light' \| 'dark' \| 'auto'` | `'light'`  | `auto` follows the OS.                                          |
+| `keySize`         | `key-size`          | `number` (px)                 | `16`       | Maximum key size. Keys shrink to fit narrow containers.         |
+| `gap`             | `gap`               | `number` (px)                 | `4`        | Gap between keys at full size (scales with the keys).           |
+| `radius`          | `radius`            | `number` (px)                 | `4`        | Corner radius at full size.                                     |
+| `minKeySize`      | `min-key-size`      | `number` (px)                 | `9`        | Below this the graph scrolls horizontally instead of shrinking. |
+| `responsive`      | `responsive`        | `'scale' \| 'scroll'`         | `'scale'`  | `scroll` keeps full-size keys and scrolls with snap.            |
+| `showMonthLabels` | `show-month-labels` | `boolean`                     | `true`     |                                                                 |
+| `showDayLabels`   | `show-day-labels`   | `boolean`                     | `true`     | Mon / Wed / Fri.                                                |
+| `showTotal`       | `show-total`        | `boolean`                     | `true`     | "1,578 contributions in the last year".                         |
+| `showLegend`      | `show-legend`       | `boolean`                     | `true`     | "Less ▢▢▢▢▢ More", drawn with mini keycaps.                     |
+| `plate`           | `plate`             | `boolean`                     | `true`     | The background plate the keys sit on.                           |
+
+### Sound
+
+| Prop     | Attribute | Type                                                          | Default   | Description                                                   |
+| -------- | --------- | ------------------------------------------------------------- | --------- | ------------------------------------------------------------- |
+| `sound`  | `sound`   | `'blue' \| 'brown' \| 'red' \| 'cream' \| SoundPack \| false` | `'brown'` | Switch profile, your own samples, or silence (`sound="off"`). |
+| `volume` | `volume`  | `number` (0–1)                                                | `0.5`     |                                                               |
+| `muted`  | `muted`   | `boolean`                                                     | `false`   |                                                               |
+
+### Motion & behaviour
+
+| Prop              | Attribute          | Type                                       | Default  | Description                                                                   |
+| ----------------- | ------------------ | ------------------------------------------ | -------- | ----------------------------------------------------------------------------- |
+| `entrance`        | `entrance`         | `boolean`                                  | `true`   | Keys drop into the plate in a diagonal wave when the graph scrolls into view. |
+| `ripple`          | `ripple`           | `boolean`                                  | `true`   | Neighbours dip and an underglow radiates through the gaps on press.           |
+| `tooltip`         | `tooltip`          | `boolean`                                  | `true`   | Popover on press / keyboard focus. Never clips: it lives in the top layer.    |
+| `themeTransition` | `theme-transition` | `boolean \| { origin, duration, stagger }` | `true`   | Colour changes sweep across the keys from `origin` (viewport point).          |
+| `ghostTyping`     | `ghost-typing`     | `boolean \| { interval, burst }`           | `false`  | Idle keys press themselves softly; stops on the first real interaction.       |
+| `reducedMotion`   | `reduced-motion`   | `'user' \| 'always' \| 'never'`            | `'user'` | `user` follows `prefers-reduced-motion`.                                      |
+| `locale`          | `locale`           | `string`                                   | —        | BCP 47 locale for dates and numbers.                                          |
+| `formatTooltip`   | _property only_    | `(day) => string`                          | —        | Custom tooltip text.                                                          |
+| `formatAriaLabel` | _property only_    | `(day) => string`                          | —        | Custom screen-reader label.                                                   |
+| `formatTotal`     | _property only_    | `(total, year) => string`                  | —        | Custom total line.                                                            |
+
+### Events
+
+| React          | Web Component event | Payload                                                                             |
+| -------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| `onKeyPress`   | `kg-keypress`       | `{ date, count, level, col, row, source }`                                          |
+| `onLoad`       | `kg-load`           | `{ days, total, year, username }`                                                   |
+| `onError`      | `kg-error`          | `KeyboardGraphError` (`code`: `not-found` · `rate-limited` · `network` · `invalid`) |
+| `onYearChange` | `kg-yearchange`     | `{ year }`                                                                          |
+
+### Imperative API
+
+Available on a React `ref` and as methods on the element.
+
+```tsx
+const graph = useRef<KeyboardGraphHandle>(null);
+<KeyboardGraph ref={graph} username="Rishabjs03" />;
+
+graph.current.press('2026-08-12'); // press a day by date (or index)
+graph.current.pressAt(10, 3, { sound: true }); // press by column (week) / row (weekday)
+graph.current.focusDay('2026-08-12'); // move keyboard focus
+graph.current.replayEntrance(); // replay the drop-in wave
+graph.current.getDays(); // ContributionDay[]
+```
+
+`press` options: `{ sound?, tooltip?, soft?, notify?, hold? }`.
+
+---
+
+## 🎨 Theming
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/themes-light.png" alt="The eight theme presets in light mode" width="49%" />
+  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/themes-dark.png" alt="The eight theme presets in dark mode" width="49%" />
+</p>
+
+**Presets:** `github` · `halloween` · `ocean` · `sunset` · `mono` · `sakura` · `retro` (classic beige keyboard) · `night`. Each has a light and a dark palette.
+
+### 1. A preset
+
+```tsx
+<KeyboardGraph username="Rishabjs03" theme="retro" colorScheme="auto" />
+```
+
+### 2. A custom theme object
+
+Override any colour of a preset. Top-level values apply to both schemes; `dark` overrides dark mode only.
+
+```tsx
+<KeyboardGraph
+  username="Rishabjs03"
+  theme={{
+    extends: 'mono',
+    levels: ['#eef2ff', '#c7d2fe', '#818cf8', '#4f46e5', '#312e81'], // level 0 → 4
+    side: '#1e1b4b', // mixed into each cap colour to shade its side walls
+    shadow: 'rgba(30, 27, 75, .3)',
+    plate: '#f8faff', // background plate
+    text: '#4c4f6b', // labels, legend, totals
+    focus: '#4f46e5', // keyboard focus ring
+    highlight: 0.35, // strength of the glossy highlight (0–1)
+    tooltip: { background: '#1e1b4b', text: '#fff', border: 'transparent' },
+    dark: { plate: '#0b0b1a', levels: ['#1c1b33'] },
+  }}
+/>
+```
+
+```html
+<keyboard-graph
+  theme='{"extends":"ocean","levels":["#eee","#cde","#9bd","#59b","#246"]}'
+></keyboard-graph>
+```
+
+### 3. Plain CSS custom properties
+
+The variables inherit through the shadow DOM, so this works for both the element and the React component:
+
+```css
+keyboard-graph,
+.kg-root {
+  --kg-level-0: #eceff4; /* override in both schemes… */
+  --kg-level-4: #5e81ac;
+  --kg-dark-plate: #2e3440; /* …or in one scheme only: --kg-light-* / --kg-dark-* */
+  --kg-font: 'Inter', sans-serif;
+}
+```
+
+| Variable                                                        | Controls                                |
+| --------------------------------------------------------------- | --------------------------------------- |
+| `--kg-level-0` … `--kg-level-4`                                 | Keycap colours per contribution level   |
+| `--kg-side`                                                     | Colour mixed in to shade the side walls |
+| `--kg-shadow`                                                   | Drop shadow under each key              |
+| `--kg-plate`                                                    | Background plate                        |
+| `--kg-text`                                                     | Labels, totals, legend                  |
+| `--kg-focus`                                                    | Focus ring                              |
+| `--kg-highlight`                                                | Gloss strength (0–1)                    |
+| `--kg-tooltip-bg` · `--kg-tooltip-text` · `--kg-tooltip-border` | Tooltip                                 |
+| `--kg-font`                                                     | Font stack                              |
+
+Precedence: `--kg-<token>` (CSS) › `theme` prop › preset defaults. The element also exposes
+`::part(root | plate | grid | key | tooltip | total | year)` for structural styling.
+
+---
+
+## 🔊 Sound
+
+| Profile | Character  | What you hear                                                                              |
+| ------- | ---------- | ------------------------------------------------------------------------------------------ |
+| `blue`  | Clicky     | A sharp click-leaf snap, then a bright bottom-out ~14 ms later; a second click on release. |
+| `brown` | Tactile    | A soft scratchy bump, then a mid-pitched bottom-out. _(default)_                           |
+| `red`   | Linear     | No bump: a rounded, thocky bottom-out and a light top-out.                                 |
+| `cream` | Deep thock | A low, damped body resonance with the highs rolled off.                                    |
+
+**How the sounds are made.** There are no audio files. Each stroke is synthesised from layered physical
+events: band-passed noise bursts (the click leaf and the plastic "clack") plus damped sine resonances
+whose pitch drops slightly as they ring (the "thock" of the housing). The synth runs once per profile,
+renders four slightly different variants of the keydown and keyup sounds, and caches them as `AudioBuffer`s shared by
+every graph on the page.
+
+**Playback.** A fixed pool of 12 voices plays strokes with **±70 cents of random detune** and **±9% gain**,
+so rapid typing never sounds robotic, never piles up, and never cuts off abruptly (a stolen voice
+fades out in 4 ms). Keydown and keyup are separate sounds.
+
+**Autoplay rules.** The `AudioContext` is created on the first real user gesture (pointer or key)
+inside the graph, never on page load.
+
+**Your own samples:**
+
+```tsx
+<KeyboardGraph
+  username="Rishabjs03"
+  sound={{ down: ['/sounds/down-1.wav', '/sounds/down-2.wav'], up: ['/sounds/up-1.wav'] }}
+/>
+```
+
+Samples are fetched and decoded once (with an `OfflineAudioContext`, so before any gesture) and cached.
+
+---
+
+## 🛰️ Data sources
+
+| Mode                   | Example                                                                  | Needs a token? |
+| ---------------------- | ------------------------------------------------------------------------ | -------------- |
+| Username (default API) | `<KeyboardGraph username="octocat" />`                                   | No             |
+| Your endpoint          | `endpoint="/api/contributions/{username}?y={year}"`                      | Server-side    |
+| Custom fetcher         | `fetcher={({ username, year, signal }) => fetch(…).then(r => r.json())}` | Up to you      |
+| Static data            | `data={[{ date: '2026-08-12', count: 12 }]}`                             | No             |
+
+Responses are cached in memory per URL (switching years back and forth never refetches), requests are
+aborted when props change, and stalled requests time out after 15 s with a **Try again** button.
+
+**States:** loading shows shimmering skeleton keys; errors show a message on the plate (with retry);
+a user with no contributions still gets a full, blank keyboard.
+
+---
+
+## 🔐 Self-hosted proxy
+
+For production traffic, or to avoid depending on a community service, run your own tiny proxy that
+talks to **GitHub's GraphQL API** with your token. `keyboard-graph/server` does the work:
+
+```ts
+// app/api/contributions/[username]/route.ts (Next.js)
+import { createContributionsHandler } from 'keyboard-graph/server';
+
+export const GET = createContributionsHandler(); // reads process.env.GITHUB_TOKEN
+```
+
+```tsx
+<KeyboardGraph username="octocat" endpoint="/api/contributions/{username}?y={year}" />
+```
+
+Ready-made examples: [Vercel Function](./examples/proxy-vercel) · [Netlify Function](./examples/proxy-netlify).
+The handler validates usernames, adds CORS headers, maps errors to proper status codes, and sets
+`s-maxage=3600, stale-while-revalidate` so your CDN absorbs repeat traffic.
+
+**Which token?** A [fine-grained personal access token](https://github.com/settings/personal-access-tokens/new)
+with **no repository access and no permissions** is enough for public contribution data. Keep it
+server-side only (an environment variable such as `GITHUB_TOKEN`). Never ship it to the browser.
+
+Need the data elsewhere? `fetchGitHubContributions({ token, username, year })` returns
+`{ total, contributions }` and works in any runtime with `fetch` (Node 18+, Deno, Bun, Workers).
+
+---
+
+## ♿ Accessibility
+
+| Key                   | Action                                                           |
+| --------------------- | ---------------------------------------------------------------- |
+| `Tab`                 | Enter the grid (lands on today)                                  |
+| `←` / `→`             | Previous / next week                                             |
+| `↑` / `↓`             | Previous / next day                                              |
+| `PageUp` / `PageDown` | Four weeks back / forward                                        |
+| `Home` / `End`        | First / last day in the row (`Ctrl`/`⌘`: first/last day overall) |
+| `Enter` / `Space`     | Press the key (with sound and animation)                         |
+| `Esc`                 | Hide the tooltip                                                 |
+
+- Every key is a real `<button>` labelled like _"12 contributions on August 12, 2026"_. Roving `tabindex` keeps the grid a single tab stop.
+- Screen-reader "clicks" (which fire no key or pointer events) still press the key.
+- A visible focus ring, and a live region that announces loading results.
+- `prefers-reduced-motion`: presses become simple fades, the entrance wave, ripples and ghost typing are disabled, and colour changes are instant.
+
+## ⚡ Performance
+
+- **7 listeners total**, delegated on the grid, instead of one per key.
+- Presses, ripples and the entrance wave animate only `transform` and `opacity`. Springs are pre-sampled, so the browser runs them off the main thread.
+- Pressing a key never triggers a React render; the ~370 keys are rendered once and memoised.
+- No layout reads in hot paths. Sizing is pure CSS (container query units), so there's no `ResizeObserver` loop.
+- The entrance wave waits until the graph is on screen; ghost typing pauses when off-screen or in a background tab.
+
+## 🖥️ SSR & browser support
+
+- Nothing touches `window`/`document` at import time. `keyboard-graph/element` only registers in the browser.
+- With `data`, the React component server-renders the full keyboard (hidden until the entrance wave runs, with a CSS failsafe if JavaScript never loads).
+- Evergreen browsers: **Chrome/Edge 111+, Safari 16.4+, Firefox 113+** (uses `color-mix()`, container query units and WAAPI). The tooltip uses the Popover API where available and falls back to fixed positioning.
+
+---
+
+## ⚠️ Third-party limits & licensing
+
+Please read this before shipping to production.
+
+- **Default contributions API** (`github-contributions-api.jogruber.de`): a free, open-source, community-run service ([source](https://github.com/grubersjoe/github-contributions-api)) that scrapes the public contribution calendar. It needs no token, but it has **no SLA and no published rate limit**, and it caches responses for about an hour. It's ideal for portfolios and demos; for high traffic, use the [self-hosted proxy](#-self-hosted-proxy) (or at least your own CDN in front). It only sees what your public profile shows, so private contributions appear only if you enabled _"Include private contributions"_ on your profile.
+- **GitHub GraphQL API** (proxy mode): 5,000 points per hour per token, and each request costs ~1 point. GitHub also applies secondary rate limits to bursts. A `contributionsCollection` covers at most one year, which matches what the component asks for. With CDN caching (`s-maxage=3600`) this comfortably serves large sites.
+- **Sounds**: synthesised at runtime by code in this repository, with no third-party recordings, so they're covered by this project's MIT licence. If you pass your own `SoundPack`, make sure you have the rights to those files (CC0 sources such as [Kenney](https://kenney.nl/assets/category:Audio) or Freesound's CC0 filter work well).
+- **Dependencies**: Motion (MIT) is an optional peer dependency for the React wrapper only. The demo uses Next.js (MIT), Tailwind CSS (MIT), sugar-high (MIT), and the Geist font (SIL Open Font License).
+
+---
+
+## 🗂️ Repository
+
+```
+.
+├── packages/keyboard-graph   # the library (published to npm)
+│   ├── src/core              # data, layout, theme, styles, springs, interactions, tooltip
+│   ├── src/audio             # switch synthesiser + Web Audio voice pool
+│   ├── src/react             # <KeyboardGraph> + Motion animator + useContributions
+│   ├── src/element           # <keyboard-graph> custom element (WAAPI animator)
+│   ├── src/server            # GitHub GraphQL helper + Fetch-API proxy handler
+│   └── test                  # Vitest unit tests
+├── apps/demo                 # Next.js (App Router) + Tailwind + Motion showcase site
+└── examples                  # plain HTML, Vercel and Netlify proxies
+```
+
+```bash
+pnpm install
+pnpm dev          # builds the library, then runs the library watcher + demo at http://localhost:3000
+pnpm test         # unit tests
+pnpm lint && pnpm typecheck
+pnpm build        # library (ESM + CJS + IIFE + types) and demo
+```
+
+Deploying the demo to Vercel: import the repo, set the root directory to `apps/demo`, and optionally
+add `GITHUB_TOKEN` to use GitHub's API directly (without it, the demo proxies the public API).
+
+## 🤝 Contributing
+
+Issues and PRs are welcome. See [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## 📄 License
+
+[MIT](./LICENSE) © [Rishab Agarwal](https://x.com/Yrishavjs)
+
+<div align="center"><sub>Made by Rishab · <a href="https://x.com/Yrishavjs">@Yrishavjs</a></sub></div>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>keyboard-graph · plain HTML</title>
+    <!-- One script tag: registers <keyboard-graph>. No React, no build step. -->
+    <script src="https://unpkg.com/keyboard-graph/dist/keyboard-graph.iife.js"></script>
+    <style>
+      body {
+        margin: 0;
+        padding: 64px 24px;
+        font-family: system-ui, sans-serif;
+        display: grid;
+        gap: 48px;
+        justify-items: center;
+      }
+      keyboard-graph {
+        width: min(1100px, 100%);
+      }
+      /* Theme with plain CSS: these override the preset in both colour schemes. */
+      .brand {
+        --kg-level-1: #c7d2fe;
+        --kg-level-2: #818cf8;
+        --kg-level-3: #4f46e5;
+        --kg-level-4: #312e81;
+        --kg-plate: #f5f7ff;
+        --kg-font: 'Inter', system-ui, sans-serif;
+      }
+      #last {
+        font-size: 14px;
+        color: #555;
+        min-height: 1.4em;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 1. Fetch by username (public API), preset theme, clicky switches -->
+    <keyboard-graph username="torvalds" theme="ocean" sound="blue" year-selector></keyboard-graph>
+
+    <!-- 2. Brand colours via CSS custom properties, dark retro switches -->
+    <keyboard-graph
+      class="brand"
+      username="gaearon"
+      sound="cream"
+      show-day-labels="false"
+    ></keyboard-graph>
+
+    <!-- 3. Static data, set as a property (no network) -->
+    <keyboard-graph id="static" theme="retro" ghost-typing></keyboard-graph>
+    <p id="last">Press a key on the last graph…</p>
+
+    <script>
+      const graph = document.getElementById('static');
+      graph.data = KeyboardGraph.sampleContributions(new Date().toISOString().slice(0, 10));
+      graph.addEventListener('kg-keypress', (event) => {
+        const { date, count } = event.detail;
+        document.getElementById('last').textContent = `${date}: ${count} contributions`;
+      });
+    </script>
+  </body>
+</html>

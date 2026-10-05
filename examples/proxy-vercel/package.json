@@ -1,0 +1,8 @@
+{
+  "name": "keyboard-graph-proxy-vercel",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "keyboard-graph": "^0.1.0"
+  }
+}
