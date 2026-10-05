@@ -5,7 +5,7 @@
   .github/assets/demo.gif (~880px wide, under 4 MB) and demo.mp4.
 -->
 <a href="https://github.com/Rishabjs03/3d-git#readme">
-  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/demo.gif" alt="keyboard-graph: a GitHub contribution graph rendered as mechanical keycaps that press down with a sound" width="880" />
+  <img src="./.github/assets/demo.gif" alt="keyboard-graph: a GitHub contribution graph rendered as mechanical keycaps that press down with a sound" width="880" />
 </a>
 
 <h1>⌨️ keyboard-graph</h1>
@@ -48,9 +48,9 @@ Every day is a key. Press one: it travels down, springs back, clicks like a real
 | 🔌 **Bring your own data**    | By username (no token needed), your own endpoint or fetcher, or a static `data` array. Includes a self-hosted GitHub GraphQL proxy helper.       |
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/press-tooltip.png" alt="A pressed key with its tooltip: No contributions on Sat, 1 Aug 2026" width="340" />
+  <img src="./.github/assets/press-tooltip.png" alt="A pressed key with its tooltip: No contributions on Sat, 1 Aug 2026" width="340" />
   &nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/keycap-closeup.png" alt="Close-up of the CSS keycaps showing the dish, skirt and shadow" width="420" />
+  <img src="./.github/assets/keycap-closeup.png" alt="Close-up of the CSS keycaps showing the dish, skirt and shadow" width="420" />
 </p>
 
 ---
@@ -281,8 +281,8 @@ graph.current.getDays(); // ContributionDay[]
 ## 🎨 Theming
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/themes-light.png" alt="The eight theme presets in light mode" width="49%" />
-  <img src="https://raw.githubusercontent.com/Rishabjs03/3d-git/main/.github/assets/themes-dark.png" alt="The eight theme presets in dark mode" width="49%" />
+  <img src="./.github/assets/themes-light.png" alt="The eight theme presets in light mode" width="49%" />
+  <img src="./.github/assets/themes-dark.png" alt="The eight theme presets in dark mode" width="49%" />
 </p>
 
 **Presets:** `github` · `halloween` · `ocean` · `sunset` · `mono` · `sakura` · `retro` (classic beige keyboard) · `night`. Each has a light and a dark palette.

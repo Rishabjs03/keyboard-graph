@@ -151,16 +151,17 @@ export const switchRecipes: Record<SwitchProfile, Record<StrokePhase, StrokeReci
     down: {
       peak: 0.95,
       layers: [
-        noise(0, 'lowpass', 520, 0.9, 0.04, 1, 0.0012),
-        tone(0, 165, 0.05, 0.8, 0.45, 0.015),
-        tone(0, 105, 0.06, 0.4),
-        noise(0, 'bandpass', 700, 1.1, 0.018, 0.35),
-        tone(0, 620, 0.01, 0.07),
+        // Body resonance kept above ~200Hz so the thock survives laptop speakers.
+        noise(0, 'lowpass', 720, 0.9, 0.034, 1, 0.0012),
+        tone(0, 215, 0.045, 0.75, 0.4, 0.015),
+        tone(0, 145, 0.05, 0.3),
+        noise(0, 'bandpass', 880, 1.2, 0.016, 0.5),
+        tone(0, 720, 0.012, 0.12),
       ],
     },
     up: {
       peak: 0.5,
-      layers: [noise(0, 'lowpass', 800, 0.8, 0.018, 0.55, 0.0008), tone(0, 330, 0.02, 0.3, 0.2)],
+      layers: [noise(0, 'lowpass', 950, 0.8, 0.016, 0.55, 0.0008), tone(0, 390, 0.018, 0.3, 0.2)],
     },
   },
 };

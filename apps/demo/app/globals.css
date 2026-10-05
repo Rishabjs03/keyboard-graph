@@ -11,35 +11,38 @@
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-:root {
-  color-scheme: light;
-  --kg-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
-}
+/* Base styles live in the base layer so Tailwind utilities can override them. */
+@layer base {
+  :root {
+    color-scheme: light;
+    --kg-font: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  }
 
-html {
-  background: #ffffff;
-  color: var(--color-ink);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
+  html {
+    background: #ffffff;
+    color: var(--color-ink);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
 
-body {
-  min-height: 100dvh;
-  font-family: var(--font-sans);
-  font-feature-settings: 'ss01', 'cv11';
-}
+  body {
+    min-height: 100dvh;
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv11';
+  }
 
-::selection {
-  background: #0a0a0a;
-  color: #ffffff;
-}
+  ::selection {
+    background: #0a0a0a;
+    color: #ffffff;
+  }
 
-/* Focus rings that feel native to the design. */
-:focus-visible {
-  outline: 2px solid #0a0a0a;
-  outline-offset: 2px;
-  border-radius: 6px;
+  /* Focus rings that feel native to the design. */
+  :focus-visible {
+    outline: 2px solid #0a0a0a;
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }
 
 /* Range input: thin track, keycap-like thumb. */
